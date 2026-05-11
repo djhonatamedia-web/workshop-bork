@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Garanta sua Vaga</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --green: #22c55e;
+      --green-dark: #16a34a;
+      --green-light: #dcfce7;
+      --white: #ffffff;
+      --gray-50: #f9fafb;
+      --gray-100: #f3f4f6;
+      --gray-300: #d1d5db;
+      --gray-500: #6b7280;
+      --gray-700: #374151;
+      --gray-900: #111827;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--white);
+      color: var(--gray-900);
+      min-height: 100vh;
+    }
+
+    /* ── HEADER ── */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 32px;
+      border-bottom: 1px solid var(--gray-100);
+    }
+
+    .logo {
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--gray-900);
+    }
+
+    .logo span { color: var(--green); }
+
+    /* ── HERO ── */
+    .hero {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 80px 24px 64px;
+      max-width: 640px;
+      margin: 0 auto;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--green-light);
+      color: var(--green-dark);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 6px 14px;
+      border-radius: 999px;
+      margin-bottom: 28px;
+    }
+
+    .badge::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      background: var(--green);
+      border-radius: 50%;
+    }
+
+    h1 {
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -0.03em;
+      color: var(--gray-900);
+      margin-bottom: 20px;
+    }
+
+    h1 em {
+      font-style: normal;
+      color: var(--green);
+    }
+
+    .subtitle {
+      font-size: 1.05rem;
+      color: var(--gray-500);
+      line-height: 1.6;
+      max-width: 480px;
+      margin-bottom: 48px;
+    }
+
+    /* ── FORM CARD ── */
+    .card {
+      background: var(--white);
+      border: 1px solid var(--gray-100);
+      border-radius: 20px;
+      padding: 40px 36px;
+      width: 100%;
+      max-width: 480px;
+      box-shadow: 0 4px 40px rgba(0,0,0,0.07);
+    }
+
+    .card-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--gray-700);
+      margin-bottom: 24px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+
+    label {
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--gray-700);
+      letter-spacing: 0.01em;
+    }
+
+    input {
+      width: 100%;
+      height: 48px;
+      padding: 0 16px;
+      border: 1.5px solid var(--gray-300);
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-family: inherit;
+      color: var(--gray-900);
+      background: var(--white);
+      transition: border-color 0.2s, box-shadow 0.2s;
+      outline: none;
+    }
+
+    input::placeholder { color: var(--gray-300); }
+
+    input:focus {
+      border-color: var(--green);
+      box-shadow: 0 0 0 3px rgba(34,197,94,0.15);
+    }
+
+    .btn {
+      width: 100%;
+      height: 52px;
+      margin-top: 8px;
+      background: var(--green);
+      color: var(--white);
+      font-size: 1rem;
+      font-weight: 700;
+      font-family: inherit;
+      letter-spacing: 0.01em;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+      box-shadow: 0 4px 16px rgba(34,197,94,0.35);
+    }
+
+    .btn:hover {
+      background: var(--green-dark);
+      box-shadow: 0 6px 20px rgba(34,197,94,0.45);
+    }
+
+    .btn:active { transform: scale(0.98); }
+
+    .privacy {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 16px;
+      font-size: 0.75rem;
+      color: var(--gray-500);
+    }
+
+    .privacy svg { flex-shrink: 0; }
+
+    /* ── FEATURES ── */
+    .features {
+      display: flex;
+      justify-content: center;
+      gap: 32px;
+      flex-wrap: wrap;
+      padding: 64px 24px 80px;
+      border-top: 1px solid var(--gray-100);
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .feature {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      text-align: center;
+      max-width: 180px;
+    }
+
+    .feature-icon {
+      width: 44px;
+      height: 44px;
+      background: var(--green-light);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .feature-icon svg { stroke: var(--green-dark); }
+
+    .feature-label {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--gray-700);
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      text-align: center;
+      padding: 24px;
+      border-top: 1px solid var(--gray-100);
+      font-size: 0.75rem;
+      color: var(--gray-500);
+    }
+
+    /* ── OVERLAY / POPUP ── */
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s;
+      padding: 24px;
+    }
+
+    .overlay.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .popup {
+      background: var(--white);
+      border-radius: 20px;
+      padding: 48px 40px;
+      max-width: 400px;
+      width: 100%;
+      text-align: center;
+      transform: scale(0.92) translateY(12px);
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.18);
+    }
+
+    .overlay.active .popup {
+      transform: scale(1) translateY(0);
+    }
+
+    .popup-icon {
+      width: 72px;
+      height: 72px;
+      background: var(--green-light);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 24px;
+    }
+
+    .popup-icon svg { stroke: var(--green-dark); }
+
+    .popup h2 {
+      font-size: 1.6rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: var(--gray-900);
+      margin-bottom: 10px;
+    }
+
+    .popup p {
+      font-size: 0.95rem;
+      color: var(--gray-500);
+      line-height: 1.6;
+      margin-bottom: 28px;
+    }
+
+    .popup-btn {
+      display: inline-block;
+      padding: 12px 32px;
+      background: var(--green);
+      color: var(--white);
+      font-size: 0.9rem;
+      font-weight: 600;
+      font-family: inherit;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .popup-btn:hover { background: var(--green-dark); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 520px) {
+      .card { padding: 28px 20px; }
+      .hero { padding: 56px 16px 48px; }
+      .features { gap: 20px; }
+      .popup { padding: 36px 24px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="logo">sua<span>marca</span></div>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="badge">Vagas Limitadas</div>
+
+    <h1>Garanta sua vaga e<br>transforme seus <em>resultados</em></h1>
+
+    <p class="subtitle">
+      Preencha o formulário abaixo e receba acesso exclusivo ao conteúdo que vai mudar a sua trajetória.
+    </p>
+
+    <!-- FORM CARD -->
+    <div class="card">
+      <p class="card-title">Insira seus dados para participar</p>
+
+      <form id="leadForm" novalidate>
+        <div class="field">
+          <label for="nome">Nome completo</label>
+          <input type="text" id="nome" name="nome" placeholder="Seu nome" required />
+        </div>
+
+        <div class="field">
+          <label for="email">E-mail</label>
+          <input type="email" id="email" name="email" placeholder="seuemail@exemplo.com" required />
+        </div>
+
+        <div class="field">
+          <label for="telefone">Telefone (WhatsApp)</label>
+          <input type="tel" id="telefone" name="telefone" placeholder="(00) 00000-0000" required />
+        </div>
+
+        <button type="submit" class="btn">QUERO GARANTIR MINHA VAGA</button>
+
+        <p class="privacy">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+          Seus dados estão protegidos. Sem spam.
+        </p>
+      </form>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="features">
+    <div class="feature">
+      <div class="feature-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+        </svg>
+      </div>
+      <span class="feature-label">Resultados reais</span>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+        </svg>
+      </div>
+      <span class="feature-label">Acesso imediato</span>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+        </svg>
+      </div>
+      <span class="feature-label">Comunidade exclusiva</span>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    &copy; 2026 · Todos os direitos reservados &nbsp;|&nbsp; Política de Privacidade
+  </footer>
+
+  <!-- POPUP -->
+  <div class="overlay" id="overlay">
+    <div class="popup">
+      <div class="popup-icon">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+      </div>
+      <h2>Inscrição feita!</h2>
+      <p>Obrigado! Em breve entraremos em contato pelo WhatsApp ou e-mail cadastrado.</p>
+      <button class="popup-btn" id="closePopup">Fechar</button>
+    </div>
+  </div>
+
+  <script>
+    // Mask telefone
+    const tel = document.getElementById('telefone');
+    tel.addEventListener('input', () => {
+      let v = tel.value.replace(/\D/g, '').slice(0, 11);
+      if (v.length > 6) v = `(${v.slice(0,2)}) ${v.slice(2,7)}-${v.slice(7)}`;
+      else if (v.length > 2) v = `(${v.slice(0,2)}) ${v.slice(2)}`;
+      else if (v.length > 0) v = `(${v}`;
+      tel.value = v;
+    });
+
+    // Form submit
+    document.getElementById('leadForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const nome = document.getElementById('nome').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const telefone = document.getElementById('telefone').value.trim();
+
+      if (!nome || !email || !telefone) {
+        const inputs = [
+          { el: document.getElementById('nome'), val: nome },
+          { el: document.getElementById('email'), val: email },
+          { el: document.getElementById('telefone'), val: telefone },
+        ];
+        inputs.forEach(({ el, val }) => {
+          if (!val) el.style.borderColor = '#ef4444';
+        });
+        return;
+      }
+
+      document.getElementById('overlay').classList.add('active');
+    });
+
+    // Reset border on input
+    ['nome', 'email', 'telefone'].forEach(id => {
+      document.getElementById(id).addEventListener('input', (e) => {
+        e.target.style.borderColor = '';
+      });
+    });
+
+    // Close popup
+    document.getElementById('closePopup').addEventListener('click', () => {
+      document.getElementById('overlay').classList.remove('active');
+    });
+
+    document.getElementById('overlay').addEventListener('click', (e) => {
+      if (e.target === e.currentTarget) {
+        e.currentTarget.classList.remove('active');
+      }
+    });
+  </script>
+</body>
+</html>
