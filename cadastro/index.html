@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Garanta sua Vaga</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <title>Workshop Tráfego Pago — Djhonata</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
 
   <!-- Meta Pixel -->
   <script>
@@ -14,527 +14,276 @@
     t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
     document,'script','https://connect.facebook.net/en_US/fbevents.js');
     fbq('init', '2168037397029380');
-
-    (function () {
-      var pvId = (crypto.randomUUID && crypto.randomUUID()) ||
-        (Date.now() + '-' + Math.random().toString(36).slice(2));
-      fbq('track', 'PageView', {}, { eventID: pvId });
-      fetch('/tracker', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        keepalive: true,
-        body: JSON.stringify({
-          event_name: 'PageView',
-          event_id: pvId,
-          event_time: Math.floor(Date.now() / 1000),
-          event_source_url: window.location.href,
-          user_data: {},
-        }),
-      }).catch(function () {});
+    (function(){
+      var id=(crypto.randomUUID&&crypto.randomUUID())||(Date.now()+'-'+Math.random().toString(36).slice(2));
+      fbq('track','PageView',{},{eventID:id});
+      fetch('/tracker',{method:'POST',headers:{'Content-Type':'application/json'},keepalive:true,
+        body:JSON.stringify({event_name:'PageView',event_id:id,event_time:Math.floor(Date.now()/1000),event_source_url:window.location.href,user_data:{}})
+      }).catch(function(){});
     })();
   </script>
+
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --green: #22c55e;
-      --green-dark: #16a34a;
-      --green-light: #dcfce7;
-      --white: #ffffff;
-      --gray-50: #f9fafb;
-      --gray-100: #f3f4f6;
-      --gray-300: #d1d5db;
-      --gray-500: #6b7280;
-      --gray-700: #374151;
-      --gray-900: #111827;
-    }
-
+    :root { --green: #22c55e; --green-dark: #16a34a; }
     html { scroll-behavior: smooth; }
+    body { font-family: 'Inter', sans-serif; background: #0a0a0a; color: #fff; min-height: 100vh; }
 
-    body {
-      font-family: 'Inter', sans-serif;
-      background: var(--white);
-      color: var(--gray-900);
-      min-height: 100vh;
-    }
-
-    /* ── HEADER ── */
     header {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 24px 32px;
-      border-bottom: 1px solid var(--gray-100);
+      display: flex; align-items: center; justify-content: center;
+      padding: 22px 32px; border-bottom: 1px solid rgba(255,255,255,.06);
+      background: rgba(10,10,10,.8); backdrop-filter: blur(12px);
+      position: sticky; top: 0; z-index: 50;
     }
-
-    .logo {
-      font-size: 1.25rem;
-      font-weight: 700;
-      letter-spacing: -0.02em;
-      color: var(--gray-900);
-    }
-
+    .logo { font-size: 1.1rem; font-weight: 700; letter-spacing: -.02em; color: #fff; }
     .logo span { color: var(--green); }
 
-    /* ── HERO ── */
     .hero {
-      display: flex;
-      flex-direction: column;
+      min-height: 100vh; display: grid;
+      grid-template-columns: 1fr 1fr;
       align-items: center;
-      text-align: center;
-      padding: 80px 24px 64px;
-      max-width: 640px;
-      margin: 0 auto;
+      max-width: 1100px; margin: 0 auto;
+      padding: 80px 32px; gap: 64px;
     }
 
     .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: var(--green-light);
-      color: var(--green-dark);
-      font-size: 0.75rem;
-      font-weight: 600;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      padding: 6px 14px;
-      border-radius: 999px;
-      margin-bottom: 28px;
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(34,197,94,.12); color: var(--green);
+      font-size: .72rem; font-weight: 700; letter-spacing: .08em;
+      text-transform: uppercase; padding: 6px 14px; border-radius: 999px;
+      border: 1px solid rgba(34,197,94,.2); margin-bottom: 28px; width: fit-content;
     }
-
-    .badge::before {
-      content: '';
-      width: 6px;
-      height: 6px;
-      background: var(--green);
-      border-radius: 50%;
-    }
+    .badge::before { content:''; width:6px; height:6px; background:var(--green); border-radius:50%; animation:pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
 
     h1 {
-      font-size: clamp(2rem, 5vw, 3rem);
-      font-weight: 800;
-      line-height: 1.15;
-      letter-spacing: -0.03em;
-      color: var(--gray-900);
-      margin-bottom: 20px;
+      font-size: clamp(2rem, 3.8vw, 3rem); font-weight: 900;
+      line-height: 1.1; letter-spacing: -.04em; margin-bottom: 24px;
     }
+    h1 em { font-style: normal; color: var(--green); }
 
-    h1 em {
-      font-style: normal;
-      color: var(--green);
+    .subtitle { font-size: 1rem; color: #9ca3af; line-height: 1.75; margin-bottom: 40px; }
+
+    .form-card {
+      background: #111; border: 1px solid rgba(255,255,255,.08);
+      border-radius: 20px; padding: 32px 28px;
     }
-
-    .subtitle {
-      font-size: 1.05rem;
-      color: var(--gray-500);
-      line-height: 1.6;
-      max-width: 480px;
-      margin-bottom: 48px;
-    }
-
-    /* ── FORM CARD ── */
-    .card {
-      background: var(--white);
-      border: 1px solid var(--gray-100);
-      border-radius: 20px;
-      padding: 40px 36px;
-      width: 100%;
-      max-width: 480px;
-      box-shadow: 0 4px 40px rgba(0,0,0,0.07);
-    }
-
-    .card-title {
-      font-size: 1rem;
-      font-weight: 600;
-      color: var(--gray-700);
-      margin-bottom: 24px;
-    }
-
-    .field {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      margin-bottom: 16px;
-    }
-
-    label {
-      font-size: 0.8rem;
-      font-weight: 500;
-      color: var(--gray-700);
-      letter-spacing: 0.01em;
-    }
-
+    .form-title { font-size: .78rem; font-weight: 600; color: #6b7280; letter-spacing: .04em; text-transform: uppercase; margin-bottom: 20px; }
+    .field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+    label { font-size: .78rem; font-weight: 500; color: #9ca3af; }
     input {
-      width: 100%;
-      height: 48px;
-      padding: 0 16px;
-      border: 1.5px solid var(--gray-300);
-      border-radius: 10px;
-      font-size: 0.95rem;
-      font-family: inherit;
-      color: var(--gray-900);
-      background: var(--white);
-      transition: border-color 0.2s, box-shadow 0.2s;
-      outline: none;
+      width: 100%; height: 46px; padding: 0 14px;
+      border: 1px solid rgba(255,255,255,.1); border-radius: 10px;
+      font-size: .9rem; font-family: inherit; color: #fff;
+      background: #1a1a1a; outline: none;
+      transition: border-color .2s, box-shadow .2s;
     }
-
-    input::placeholder { color: var(--gray-300); }
-
-    input:focus {
-      border-color: var(--green);
-      box-shadow: 0 0 0 3px rgba(34,197,94,0.15);
-    }
+    input::placeholder { color: #374151; }
+    input:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgba(34,197,94,.1); }
 
     .btn {
-      width: 100%;
-      height: 52px;
-      margin-top: 8px;
-      background: var(--green);
-      color: var(--white);
-      font-size: 1rem;
-      font-weight: 700;
-      font-family: inherit;
-      letter-spacing: 0.01em;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
-      box-shadow: 0 4px 16px rgba(34,197,94,0.35);
+      width: 100%; height: 50px; margin-top: 6px;
+      background: var(--green); color: #000;
+      font-size: .95rem; font-weight: 800; font-family: inherit;
+      border: none; border-radius: 10px; cursor: pointer;
+      transition: background .2s, transform .1s;
+      box-shadow: 0 4px 20px rgba(34,197,94,.35);
     }
-
-    .btn:hover {
-      background: var(--green-dark);
-      box-shadow: 0 6px 20px rgba(34,197,94,0.45);
-    }
-
-    .btn:active { transform: scale(0.98); }
+    .btn:hover { background: var(--green-dark); }
+    .btn:active { transform: scale(.98); }
 
     .privacy {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      margin-top: 16px;
-      font-size: 0.75rem;
-      color: var(--gray-500);
+      display: flex; align-items: center; justify-content: center;
+      gap: 5px; margin-top: 12px; font-size: .72rem; color: #4b5563;
     }
 
-    .privacy svg { flex-shrink: 0; }
-
-    /* ── FEATURES ── */
-    .features {
-      display: flex;
-      justify-content: center;
-      gap: 32px;
-      flex-wrap: wrap;
-      padding: 64px 24px 80px;
-      border-top: 1px solid var(--gray-100);
-      max-width: 800px;
-      margin: 0 auto;
+    .hero-right { display: flex; align-items: center; justify-content: center; }
+    .hero-img-wrap { position: relative; width: 100%; max-width: 420px; }
+    .hero-img-wrap::before {
+      content: ''; position: absolute; inset: -2px; border-radius: 24px;
+      background: linear-gradient(135deg, rgba(34,197,94,.25), transparent 60%); z-index: 0;
     }
-
-    .feature {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 10px;
-      text-align: center;
-      max-width: 180px;
+    .hero-img-wrap img {
+      width: 100%; border-radius: 22px; display: block;
+      position: relative; z-index: 1; filter: grayscale(10%);
     }
-
-    .feature-icon {
-      width: 44px;
-      height: 44px;
-      background: var(--green-light);
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    .hero-img-tag {
+      position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
+      background: rgba(10,10,10,.88); backdrop-filter: blur(10px);
+      border: 1px solid rgba(34,197,94,.2); border-radius: 12px;
+      padding: 10px 20px; text-align: center; z-index: 2; white-space: nowrap;
     }
+    .hero-img-tag strong { display: block; font-size: .9rem; font-weight: 700; color: #fff; }
+    .hero-img-tag span { font-size: .72rem; color: var(--green); }
 
-    .feature-icon svg { stroke: var(--green-dark); }
-
-    .feature-label {
-      font-size: 0.85rem;
-      font-weight: 500;
-      color: var(--gray-700);
+    .trust {
+      border-top: 1px solid rgba(255,255,255,.05); padding: 28px 32px;
+      display: flex; justify-content: center; gap: 48px; flex-wrap: wrap;
     }
+    .trust-item { display: flex; align-items: center; gap: 8px; }
+    .trust-item span { font-size: .8rem; color: #6b7280; }
+    .trust-item strong { color: #e5e7eb; }
 
-    /* ── FOOTER ── */
-    footer {
-      text-align: center;
-      padding: 24px;
-      border-top: 1px solid var(--gray-100);
-      font-size: 0.75rem;
-      color: var(--gray-500);
-    }
-
-    /* ── OVERLAY / POPUP ── */
     .overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.45);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 999;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.25s;
-      padding: 24px;
+      position: fixed; inset: 0; background: rgba(0,0,0,.7);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 999; opacity: 0; pointer-events: none;
+      transition: opacity .25s; padding: 24px;
     }
-
-    .overlay.active {
-      opacity: 1;
-      pointer-events: all;
-    }
-
+    .overlay.active { opacity: 1; pointer-events: all; }
     .popup {
-      background: var(--white);
-      border-radius: 20px;
-      padding: 48px 40px;
-      max-width: 400px;
-      width: 100%;
-      text-align: center;
-      transform: scale(0.92) translateY(12px);
-      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-      box-shadow: 0 20px 60px rgba(0,0,0,0.18);
+      background: #111; border: 1px solid rgba(34,197,94,.2);
+      border-radius: 20px; padding: 44px 36px;
+      max-width: 380px; width: 100%; text-align: center;
+      transform: scale(.93) translateY(10px);
+      transition: transform .3s cubic-bezier(.34,1.56,.64,1);
     }
-
-    .overlay.active .popup {
-      transform: scale(1) translateY(0);
-    }
-
+    .overlay.active .popup { transform: scale(1) translateY(0); }
     .popup-icon {
-      width: 72px;
-      height: 72px;
-      background: var(--green-light);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto 24px;
+      width: 64px; height: 64px; background: rgba(34,197,94,.12);
+      border-radius: 50%; display: flex; align-items: center;
+      justify-content: center; margin: 0 auto 20px;
     }
-
-    .popup-icon svg { stroke: var(--green-dark); }
-
-    .popup h2 {
-      font-size: 1.6rem;
-      font-weight: 800;
-      letter-spacing: -0.03em;
-      color: var(--gray-900);
-      margin-bottom: 10px;
-    }
-
-    .popup p {
-      font-size: 0.95rem;
-      color: var(--gray-500);
-      line-height: 1.6;
-      margin-bottom: 28px;
-    }
-
+    .popup h2 { font-size: 1.4rem; font-weight: 800; margin-bottom: 8px; }
+    .popup p { font-size: .88rem; color: #6b7280; line-height: 1.65; margin-bottom: 24px; }
     .popup-btn {
-      display: inline-block;
-      padding: 12px 32px;
-      background: var(--green);
-      color: var(--white);
-      font-size: 0.9rem;
-      font-weight: 600;
-      font-family: inherit;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: background 0.2s;
+      padding: 12px 28px; background: var(--green); color: #000;
+      font-size: .88rem; font-weight: 700; font-family: inherit;
+      border: none; border-radius: 10px; cursor: pointer; transition: background .2s;
     }
-
     .popup-btn:hover { background: var(--green-dark); }
 
-    /* ── RESPONSIVE ── */
-    @media (max-width: 520px) {
-      .card { padding: 28px 20px; }
-      .hero { padding: 56px 16px 48px; }
-      .features { gap: 20px; }
-      .popup { padding: 36px 24px; }
+    footer { text-align: center; padding: 24px; border-top: 1px solid rgba(255,255,255,.05); font-size: .72rem; color: #374151; }
+
+    @media (max-width: 768px) {
+      .hero { grid-template-columns: 1fr; gap: 40px; padding: 48px 20px; min-height: auto; }
+      .hero-right { order: -1; }
+      .hero-img-wrap { max-width: 260px; margin: 0 auto; }
+      .trust { gap: 24px; }
     }
   </style>
 </head>
 <body>
 
-  <!-- HEADER -->
-  <header>
-    <div class="logo">sua<span>marca</span></div>
-  </header>
+<header>
+  <div class="logo">djhonata<span>.mkt</span></div>
+</header>
 
-  <!-- HERO -->
-  <section class="hero">
-    <div class="badge">Vagas Limitadas</div>
+<section>
+  <div class="hero">
+    <div>
+      <div class="badge">Vagas Encerrando</div>
+      <h1>Chega de investir em anúncio e<br><em>não ver resultado</em></h1>
+      <p class="subtitle">No workshop ao vivo eu mostro exatamente como estruturo campanhas que convertem — do zero ao avançado, sem enrolação. Você sai sabendo o que fazer amanhã.</p>
 
-    <h1>Garanta sua vaga e<br>transforme seus <em>resultados</em></h1>
+      <div class="form-card">
+        <p class="form-title">Reserve sua vaga gratuita</p>
+        <form id="leadForm" novalidate>
+          <div class="field">
+            <label for="nome">Seu nome</label>
+            <input type="text" id="nome" placeholder="Como posso te chamar?" required />
+          </div>
+          <div class="field">
+            <label for="email">Melhor e-mail</label>
+            <input type="email" id="email" placeholder="voce@email.com" required />
+          </div>
+          <div class="field">
+            <label for="tel">WhatsApp</label>
+            <input type="tel" id="tel" placeholder="(00) 00000-0000" required />
+          </div>
+          <button type="submit" class="btn">QUERO MINHA VAGA GRATUITA →</button>
+          <p class="privacy">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#4b5563" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            100% gratuito · Sem spam
+          </p>
+        </form>
+      </div>
+    </div>
 
-    <p class="subtitle">
-      Preencha o formulário abaixo e receba acesso exclusivo ao conteúdo que vai mudar a sua trajetória.
-    </p>
-
-    <!-- FORM CARD -->
-    <div class="card">
-      <p class="card-title">Insira seus dados para participar</p>
-
-      <form id="leadForm" novalidate>
-        <div class="field">
-          <label for="nome">Nome completo</label>
-          <input type="text" id="nome" name="nome" placeholder="Seu nome" required />
+    <div class="hero-right">
+      <div class="hero-img-wrap">
+        <img src="/assets/foto-01.png" alt="Djhonata Filho" />
+        <div class="hero-img-tag">
+          <strong>Djhonata Filho</strong>
+          <span>Especialista em Tráfego Pago</span>
         </div>
-
-        <div class="field">
-          <label for="email">E-mail</label>
-          <input type="email" id="email" name="email" placeholder="seuemail@exemplo.com" required />
-        </div>
-
-        <div class="field">
-          <label for="telefone">Telefone (WhatsApp)</label>
-          <input type="tel" id="telefone" name="telefone" placeholder="(00) 00000-0000" required />
-        </div>
-
-        <button type="submit" class="btn">QUERO GARANTIR MINHA VAGA</button>
-
-        <p class="privacy">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-          </svg>
-          Seus dados estão protegidos. Sem spam.
-        </p>
-      </form>
-    </div>
-  </section>
-
-  <!-- FEATURES -->
-  <section class="features">
-    <div class="feature">
-      <div class="feature-icon">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
-        </svg>
       </div>
-      <span class="feature-label">Resultados reais</span>
-    </div>
-    <div class="feature">
-      <div class="feature-icon">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
-        </svg>
-      </div>
-      <span class="feature-label">Acesso imediato</span>
-    </div>
-    <div class="feature">
-      <div class="feature-icon">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
-          <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-        </svg>
-      </div>
-      <span class="feature-label">Comunidade exclusiva</span>
-    </div>
-  </section>
-
-  <!-- FOOTER -->
-  <footer>
-    &copy; 2026 · Todos os direitos reservados &nbsp;|&nbsp; Política de Privacidade
-  </footer>
-
-  <!-- POPUP -->
-  <div class="overlay" id="overlay">
-    <div class="popup">
-      <div class="popup-icon">
-        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="20 6 9 17 4 12"/>
-        </svg>
-      </div>
-      <h2>Inscrição feita!</h2>
-      <p>Obrigado! Em breve entraremos em contato pelo WhatsApp ou e-mail cadastrado.</p>
-      <button class="popup-btn" id="closePopup">Fechar</button>
     </div>
   </div>
+</section>
 
-  <script>
-    // Mask telefone
-    const tel = document.getElementById('telefone');
-    tel.addEventListener('input', () => {
-      let v = tel.value.replace(/\D/g, '').slice(0, 11);
-      if (v.length > 6) v = `(${v.slice(0,2)}) ${v.slice(2,7)}-${v.slice(7)}`;
-      else if (v.length > 2) v = `(${v.slice(0,2)}) ${v.slice(2)}`;
-      else if (v.length > 0) v = `(${v}`;
-      tel.value = v;
-    });
+<div class="trust">
+  <div class="trust-item">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+    <span><strong>+2.400</strong> alunos formados</span>
+  </div>
+  <div class="trust-item">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+    <span><strong>R$ 50M+</strong> gerenciados em campanhas</span>
+  </div>
+  <div class="trust-item">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+    <span>Workshop <strong>ao vivo</strong> · Acesso imediato</span>
+  </div>
+</div>
 
-    // Form submit
-    document.getElementById('leadForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const nome     = document.getElementById('nome').value.trim();
-      const email    = document.getElementById('email').value.trim();
-      const telefone = document.getElementById('telefone').value.trim();
+<footer>© 2026 · Djhonata Filho · Todos os direitos reservados</footer>
 
-      if (!nome || !email || !telefone) {
-        [{ el: document.getElementById('nome'), val: nome },
-         { el: document.getElementById('email'), val: email },
-         { el: document.getElementById('telefone'), val: telefone }]
-          .forEach(({ el, val }) => { if (!val) el.style.borderColor = '#ef4444'; });
-        return;
-      }
+<div class="overlay" id="overlay">
+  <div class="popup">
+    <div class="popup-icon">
+      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+    </div>
+    <h2>Vaga garantida!</h2>
+    <p>Em breve você recebe todas as informações do workshop no e-mail e WhatsApp cadastrados.</p>
+    <button class="popup-btn" id="closePopup">Fechar</button>
+  </div>
+</div>
 
-      const btn = e.target.querySelector('.btn');
-      btn.disabled = true;
-      btn.textContent = 'Enviando…';
+<script>
+  const tel = document.getElementById('tel');
+  tel.addEventListener('input', () => {
+    let v = tel.value.replace(/\D/g,'').slice(0,11);
+    if(v.length>6) v=`(${v.slice(0,2)}) ${v.slice(2,7)}-${v.slice(7)}`;
+    else if(v.length>2) v=`(${v.slice(0,2)}) ${v.slice(2)}`;
+    else if(v.length) v=`(${v}`;
+    tel.value=v;
+  });
 
-      const nameParts = nome.split(/\s+/);
-      const fn = nameParts[0] || '';
-      const ln = nameParts.slice(1).join(' ') || '';
+  document.getElementById('leadForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const nome=document.getElementById('nome').value.trim();
+    const email=document.getElementById('email').value.trim();
+    const phone=document.getElementById('tel').value.trim();
+    if(!nome||!email||!phone){
+      [['nome',nome],['email',email],['tel',phone]].forEach(([id,v])=>{
+        if(!v) document.getElementById(id).style.borderColor='#ef4444';
+      }); return;
+    }
+    const btn=e.target.querySelector('.btn');
+    btn.disabled=true; btn.textContent='Enviando…';
+    const nameParts=nome.split(/\s+/);
+    const fn=nameParts[0]||''; const ln=nameParts.slice(1).join(' ')||'';
+    const eventId=crypto.randomUUID();
+    try{fbq('track','Lead',{},{eventID:eventId});}catch(_){}
+    try{
+      await fetch('/tracker',{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({event_name:'Lead',event_id:eventId,event_time:Math.floor(Date.now()/1000),
+          event_source_url:window.location.href,user_data:{em:email,fn,ln,ph:phone}})});
+    }catch(_){}
+    btn.disabled=false; btn.textContent='QUERO MINHA VAGA GRATUITA →';
+    document.getElementById('overlay').classList.add('active');
+  });
 
-      const eventId   = crypto.randomUUID();
-      const eventTime = Math.floor(Date.now() / 1000);
-
-      // Browser pixel fire (deduplicado pelo Meta via event_id)
-      try { fbq('track', 'Lead', {}, { eventID: eventId }); } catch (_) {}
-
-      // Server-side CAPI fire (token protegido na Cloudflare)
-      try {
-        const res = await fetch('/tracker', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            event_name: 'Lead',
-            event_id: eventId,
-            event_time: eventTime,
-            event_source_url: window.location.href,
-            user_data: { em: email, fn, ln, ph: telefone },
-          }),
-        });
-        if (!res.ok) console.error('tracker error', await res.text());
-      } catch (err) {
-        console.error('tracker fetch failed', err);
-      }
-
-      btn.disabled = false;
-      btn.textContent = 'QUERO GARANTIR MINHA VAGA';
-      document.getElementById('overlay').classList.add('active');
-    });
-
-    // Reset border on input
-    ['nome', 'email', 'telefone'].forEach(id => {
-      document.getElementById(id).addEventListener('input', (e) => {
-        e.target.style.borderColor = '';
-      });
-    });
-
-    // Close popup
-    document.getElementById('closePopup').addEventListener('click', () => {
-      document.getElementById('overlay').classList.remove('active');
-    });
-
-    document.getElementById('overlay').addEventListener('click', (e) => {
-      if (e.target === e.currentTarget) {
-        e.currentTarget.classList.remove('active');
-      }
-    });
-  </script>
+  ['nome','email','tel'].forEach(id=>{
+    document.getElementById(id).addEventListener('input',e=>e.target.style.borderColor='');
+  });
+  document.getElementById('closePopup').addEventListener('click',()=>{
+    document.getElementById('overlay').classList.remove('active');
+  });
+  document.getElementById('overlay').addEventListener('click',e=>{
+    if(e.target===e.currentTarget) e.currentTarget.classList.remove('active');
+  });
+</script>
 </body>
 </html>
