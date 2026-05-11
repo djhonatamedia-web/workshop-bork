@@ -5,6 +5,34 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Garanta sua Vaga</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Meta Pixel -->
+  <script>
+    !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+    n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+    document,'script','https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '2168037397029380');
+
+    (function () {
+      var pvId = (crypto.randomUUID && crypto.randomUUID()) ||
+        (Date.now() + '-' + Math.random().toString(36).slice(2));
+      fbq('track', 'PageView', {}, { eventID: pvId });
+      fetch('/tracker', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        keepalive: true,
+        body: JSON.stringify({
+          event_name: 'PageView',
+          event_id: pvId,
+          event_time: Math.floor(Date.now() / 1000),
+          event_source_url: window.location.href,
+          user_data: {},
+        }),
+      }).catch(function () {});
+    })();
+  </script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -439,24 +467,54 @@
     });
 
     // Form submit
-    document.getElementById('leadForm').addEventListener('submit', (e) => {
+    document.getElementById('leadForm').addEventListener('submit', async (e) => {
       e.preventDefault();
-      const nome = document.getElementById('nome').value.trim();
-      const email = document.getElementById('email').value.trim();
+      const nome     = document.getElementById('nome').value.trim();
+      const email    = document.getElementById('email').value.trim();
       const telefone = document.getElementById('telefone').value.trim();
 
       if (!nome || !email || !telefone) {
-        const inputs = [
-          { el: document.getElementById('nome'), val: nome },
-          { el: document.getElementById('email'), val: email },
-          { el: document.getElementById('telefone'), val: telefone },
-        ];
-        inputs.forEach(({ el, val }) => {
-          if (!val) el.style.borderColor = '#ef4444';
-        });
+        [{ el: document.getElementById('nome'), val: nome },
+         { el: document.getElementById('email'), val: email },
+         { el: document.getElementById('telefone'), val: telefone }]
+          .forEach(({ el, val }) => { if (!val) el.style.borderColor = '#ef4444'; });
         return;
       }
 
+      const btn = e.target.querySelector('.btn');
+      btn.disabled = true;
+      btn.textContent = 'Enviando…';
+
+      const nameParts = nome.split(/\s+/);
+      const fn = nameParts[0] || '';
+      const ln = nameParts.slice(1).join(' ') || '';
+
+      const eventId   = crypto.randomUUID();
+      const eventTime = Math.floor(Date.now() / 1000);
+
+      // Browser pixel fire (deduplicado pelo Meta via event_id)
+      try { fbq('track', 'Lead', {}, { eventID: eventId }); } catch (_) {}
+
+      // Server-side CAPI fire (token protegido na Cloudflare)
+      try {
+        const res = await fetch('/tracker', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            event_name: 'Lead',
+            event_id: eventId,
+            event_time: eventTime,
+            event_source_url: window.location.href,
+            user_data: { em: email, fn, ln, ph: telefone },
+          }),
+        });
+        if (!res.ok) console.error('tracker error', await res.text());
+      } catch (err) {
+        console.error('tracker fetch failed', err);
+      }
+
+      btn.disabled = false;
+      btn.textContent = 'QUERO GARANTIR MINHA VAGA';
       document.getElementById('overlay').classList.add('active');
     });
 
