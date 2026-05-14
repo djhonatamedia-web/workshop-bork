@@ -574,6 +574,30 @@
     });
   });
 
+  // --- trk: persiste atribuição para o webhook da Kiwify ---
+  const CHECKOUT_BASE = 'https://pay.kiwify.com.br/XretFUl';
+  const trk = crypto.randomUUID();
+
+  // Persiste o trk + dados da sessão no D1
+  fetch('/checkout-session', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    keepalive: true,
+    body: JSON.stringify({
+      trk,
+      event_source_url: window.location.href,
+      user_data: {},
+    }),
+  }).catch(() => {});
+
+  // Injeta ?sck=<trk> em todos os links de checkout
+  function buildCheckoutUrl() {
+    return CHECKOUT_BASE + '?sck=' + trk;
+  }
+  document.querySelectorAll('a[href="' + CHECKOUT_BASE + '"]').forEach(a => {
+    a.href = buildCheckoutUrl();
+  });
+
   // ViewContent event ao carregar
   (function () {
     const id = crypto.randomUUID();
