@@ -312,7 +312,7 @@
   });
 
   var state = { path: null, answers: {}, stepIndex: 0, finalSubmitted: false };
-  var history = [];
+  var navStack = [];
 
   var root = document.getElementById('step-root');
   var backBtn = document.getElementById('back-btn');
@@ -324,7 +324,7 @@
   }
 
   function updateChrome() {
-    backBtn.classList.toggle('visible', history.length > 0);
+    backBtn.classList.toggle('visible', navStack.length > 0);
     var steps = getSteps();
     var total = steps.length + 1;
     var current = Math.min(state.stepIndex, total);
@@ -358,7 +358,7 @@
   }
 
   function selectOption(step, value) {
-    history.push({ stepIndex: state.stepIndex, path: state.path });
+    navStack.push({ stepIndex: state.stepIndex, path: state.path });
     state.answers[step.id] = value;
     if (step.id === 'entry') {
       state.path = value;
@@ -373,8 +373,8 @@
   }
 
   function goBack() {
-    if (history.length === 0) return;
-    var prev = history.pop();
+    if (navStack.length === 0) return;
+    var prev = navStack.pop();
     state.stepIndex = prev.stepIndex;
     state.path = prev.path;
     render();
