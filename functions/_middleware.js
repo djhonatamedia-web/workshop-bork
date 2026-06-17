@@ -12,6 +12,7 @@ export async function onRequest(context) {
     && !url.pathname.startsWith('/scripts/')
     && !url.pathname.startsWith('/webhook/')
     && !url.pathname.startsWith('/checkout-session')
+    && !url.pathname.startsWith('/quiz-submit')
     && !url.pathname.startsWith('/api/')
     && !url.pathname.startsWith('/dash');
 

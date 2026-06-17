@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Djhonata · Quiz</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Meta Pixel -->
+  <script>
+    !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+    n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+    document,'script','https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '2168037397029380');
+    (function(){
+      var id=(crypto.randomUUID&&crypto.randomUUID())||(Date.now()+'-'+Math.random().toString(36).slice(2));
+      fbq('track','PageView',{},{eventID:id});
+      fetch('/tracker',{method:'POST',headers:{'Content-Type':'application/json'},keepalive:true,
+        body:JSON.stringify({event_name:'PageView',event_id:id,event_time:Math.floor(Date.now()/1000),event_source_url:window.location.href,user_data:{}})
+      }).catch(function(){});
+    })();
+  </script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(160deg, #0a0a0a 0%, #1a1a1a 50%, #0a0a0a 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 50% at 20% 20%, rgba(34,197,94,.07), transparent 60%),
+        radial-gradient(ellipse 50% 40% at 80% 80%, rgba(34,197,94,.05), transparent 60%);
+      pointer-events: none;
+    }
+
+    .quiz-shell {
+      width: 100%;
+      max-width: 440px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .top-bar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+
+    .back-btn {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      border: 1px solid #1f1f1f;
+      background: #111111;
+      color: #6b7280;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: border-color .18s, color .18s;
+    }
+    .back-btn:hover { border-color: #22c55e; color: #e5e7eb; }
+    .back-btn.visible { display: flex; }
+
+    .progress-track {
+      flex: 1;
+      height: 4px;
+      border-radius: 4px;
+      background: #1f1f1f;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: #22c55e;
+      border-radius: 4px;
+      transition: width .3s ease;
+    }
+
+    .step { animation: fadeSlide .25s ease; }
+    @keyframes fadeSlide {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .q-eyebrow {
+      font-size: .75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+      color: #22c55e;
+      margin-bottom: 10px;
+    }
+
+    .q-title {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: -.02em;
+      line-height: 1.3;
+      margin-bottom: 8px;
+    }
+
+    .q-subtitle {
+      font-size: .88rem;
+      color: #6b7280;
+      line-height: 1.6;
+      margin-bottom: 28px;
+    }
+
+    .options-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .option-btn, .link-btn {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      padding: 16px 18px;
+      border: 1px solid #1f1f1f;
+      border-radius: 14px;
+      background: #111111;
+      color: #e5e7eb;
+      font-size: .92rem;
+      font-weight: 600;
+      font-family: inherit;
+      text-decoration: none;
+      cursor: pointer;
+      transition: border-color .18s, background .18s, transform .1s;
+      text-align: left;
+    }
+
+    .option-btn:hover, .link-btn:hover {
+      border-color: #22c55e;
+      background: #141414;
+      color: #fff;
+    }
+
+    .option-btn:active, .link-btn:active { transform: scale(.98); }
+
+    .link-btn.featured {
+      background: #22c55e;
+      border-color: #22c55e;
+      color: #000;
+      font-weight: 700;
+      justify-content: center;
+      box-shadow: 0 4px 24px rgba(34,197,94,.25);
+    }
+
+    .link-btn.featured:hover {
+      background: #16a34a;
+      border-color: #16a34a;
+    }
+
+    .lead-form {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .lead-form input {
+      width: 100%;
+      padding: 14px 16px;
+      border: 1px solid #1f1f1f;
+      border-radius: 12px;
+      background: #111111;
+      color: #fff;
+      font-size: .92rem;
+      font-family: inherit;
+    }
+
+    .lead-form input::placeholder { color: #6b7280; }
+    .lead-form input:focus { outline: none; border-color: #22c55e; }
+
+    .lead-form button { margin-top: 8px; border: none; }
+
+    .footer {
+      margin-top: 28px;
+      text-align: center;
+      font-size: .7rem;
+      color: #2d2d2d;
+      letter-spacing: .02em;
+    }
+  </style>
+</head>
+<body>
+
+<div class="quiz-shell">
+  <div class="top-bar">
+    <button class="back-btn" id="back-btn" aria-label="Voltar">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+    </button>
+    <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+  </div>
+
+  <div id="step-root"></div>
+
+  <p class="footer">© 2026 · Djhonata Filho</p>
+</div>
+
+<script>
+  var WHATSAPP_NUMBER = '5548996637248';
+
+  var ENTRY_STEP = {
+    id: 'entry',
+    title: 'O que você procura?',
+    subtitle: 'Escolha a opção que mais se encaixa com você',
+    options: [
+      { label: 'Quero contratar gestão de tráfego para o meu negócio', value: 'trafego' },
+      { label: 'Quero aprender tráfego pago (curso)', value: 'curso' },
+      { label: 'Só quero acompanhar o conteúdo gratuito', value: 'conteudo' },
+    ],
+  };
+
+  var FLOWS = {
+    trafego: [
+      {
+        id: 'segmento',
+        title: 'Qual o segmento do seu negócio?',
+        options: [
+          { label: 'E-commerce', value: 'ecommerce' },
+          { label: 'Infoproduto ou curso', value: 'infoproduto' },
+          { label: 'Serviço local', value: 'servico_local' },
+          { label: 'Outro', value: 'outro' },
+        ],
+      },
+      {
+        id: 'investe_hoje',
+        title: 'Você já investe em anúncios hoje?',
+        options: [
+          { label: 'Sim, já invisto', value: 'sim' },
+          { label: 'Não, seria a primeira vez', value: 'nao' },
+          { label: 'Já investi e parei', value: 'parei' },
+        ],
+      },
+      {
+        id: 'orcamento',
+        title: 'Qual orçamento mensal você pretende investir em anúncios?',
+        options: [
+          { label: 'Até R$1.000', value: 'ate_1000' },
+          { label: 'R$1.000 a R$3.000', value: '1000_3000' },
+          { label: 'R$3.000 a R$10.000', value: '3000_10000' },
+          { label: 'Acima de R$10.000', value: 'acima_10000' },
+        ],
+      },
+      {
+        id: 'urgencia',
+        title: 'Para quando você quer começar?',
+        options: [
+          { label: 'Esta semana', value: 'esta_semana' },
+          { label: 'Este mês', value: 'este_mes' },
+          { label: 'Ainda estou pesquisando', value: 'pesquisando' },
+        ],
+      },
+    ],
+    curso: [
+      {
+        id: 'experiencia',
+        title: 'Qual seu nível de experiência com tráfego pago?',
+        options: [
+          { label: 'Nunca fiz nenhum anúncio', value: 'nunca' },
+          { label: 'Já testei mas sem resultado consistente', value: 'testei' },
+          { label: 'Já tenho resultado e quero evoluir', value: 'tenho_resultado' },
+        ],
+      },
+      {
+        id: 'objetivo',
+        title: 'Qual seu objetivo principal?',
+        options: [
+          { label: 'Gerenciar os anúncios do meu próprio negócio', value: 'proprio_negocio' },
+          { label: 'Virar gestor de tráfego e atender clientes', value: 'gestor' },
+          { label: 'Aumentar minha renda com uma nova habilidade', value: 'renda_extra' },
+        ],
+      },
+    ],
+    conteudo: [
+      {
+        id: 'formato',
+        title: 'Qual formato de conteúdo você mais consome?',
+        options: [
+          { label: 'Vídeos curtos (Reels/TikTok)', value: 'curtos' },
+          { label: 'Vídeos longos (YouTube)', value: 'longos' },
+          { label: 'Posts e carrosséis (Instagram)', value: 'posts' },
+        ],
+      },
+    ],
+  };
+
+  var LABELS = {};
+  [ENTRY_STEP].concat(FLOWS.trafego, FLOWS.curso, FLOWS.conteudo).forEach(function (q) {
+    LABELS[q.id] = {};
+    q.options.forEach(function (o) { LABELS[q.id][o.value] = o.label; });
+  });
+
+  var state = { path: null, answers: {}, stepIndex: 0, finalSubmitted: false };
+  var history = [];
+
+  var root = document.getElementById('step-root');
+  var backBtn = document.getElementById('back-btn');
+  var progressFill = document.getElementById('progress-fill');
+
+  function getSteps() {
+    if (!state.path) return [ENTRY_STEP];
+    return [ENTRY_STEP].concat(FLOWS[state.path]);
+  }
+
+  function updateChrome() {
+    backBtn.classList.toggle('visible', history.length > 0);
+    var steps = getSteps();
+    var total = steps.length + 1;
+    var current = Math.min(state.stepIndex, total);
+    progressFill.style.width = (current / total * 100) + '%';
+  }
+
+  function render() {
+    var steps = getSteps();
+    updateChrome();
+    if (state.stepIndex < steps.length) {
+      renderQuestion(steps[state.stepIndex]);
+    } else {
+      renderResult(state.path);
+    }
+  }
+
+  function renderQuestion(step) {
+    var html = '<div class="step">';
+    html += '<div class="q-eyebrow">Pergunta ' + (state.stepIndex + 1) + '</div>';
+    html += '<h1 class="q-title">' + step.title + '</h1>';
+    if (step.subtitle) html += '<p class="q-subtitle">' + step.subtitle + '</p>';
+    html += '<div class="options-list">';
+    step.options.forEach(function (o) {
+      html += '<button class="option-btn" data-value="' + o.value + '">' + o.label + '</button>';
+    });
+    html += '</div></div>';
+    root.innerHTML = html;
+    root.querySelectorAll('.option-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () { selectOption(step, btn.dataset.value); });
+    });
+  }
+
+  function selectOption(step, value) {
+    history.push({ stepIndex: state.stepIndex, path: state.path });
+    state.answers[step.id] = value;
+    if (step.id === 'entry') {
+      state.path = value;
+      try { trackViewContent(value); } catch (_) {}
+    }
+    state.stepIndex++;
+    render();
+  }
+
+  function genId() {
+    return (crypto.randomUUID && crypto.randomUUID()) || (Date.now() + '-' + Math.random().toString(36).slice(2));
+  }
+
+  function goBack() {
+    if (history.length === 0) return;
+    var prev = history.pop();
+    state.stepIndex = prev.stepIndex;
+    state.path = prev.path;
+    render();
+  }
+  backBtn.addEventListener('click', goBack);
+
+  function renderResult(path) {
+    if (path === 'trafego') {
+      renderTrafegoResult();
+      return;
+    }
+    if (!state.finalSubmitted) {
+      state.finalSubmitted = true;
+      try { submitQuizAnswers(path, null, null); } catch (_) {}
+    }
+    if (path === 'curso') renderCursoResult();
+    else renderConteudoResult();
+  }
+
+  function renderCursoResult() {
+    root.innerHTML =
+      '<div class="step">' +
+      '<div class="q-eyebrow">Resultado</div>' +
+      '<h1 class="q-title">O curso é pra você</h1>' +
+      '<p class="q-subtitle">Pelo seu perfil, você tem tudo para aprender tráfego pago do zero e aplicar no seu negócio (ou começar a atender clientes como gestor).</p>' +
+      '<div class="options-list">' +
+      '<a href="/vendas" class="link-btn featured">Quero conhecer o curso</a>' +
+      '</div></div>';
+  }
+
+  function renderConteudoResult() {
+    root.innerHTML =
+      '<div class="step">' +
+      '<div class="q-eyebrow">Resultado</div>' +
+      '<h1 class="q-title">Bora trocar uma ideia por aí</h1>' +
+      '<p class="q-subtitle">Me acompanhe nas redes pra receber conteúdo gratuito sobre tráfego pago.</p>' +
+      '<div class="options-list">' +
+      '<a href="https://instagram.com/djhonatamkt" target="_blank" class="link-btn">Instagram</a>' +
+      '<a href="https://www.youtube.com/@djhonatamkt" target="_blank" class="link-btn">YouTube</a>' +
+      '<a href="https://www.tiktok.com/@djhonatamkt" target="_blank" class="link-btn">TikTok</a>' +
+      '</div></div>';
+  }
+
+  function renderTrafegoResult() {
+    root.innerHTML =
+      '<div class="step">' +
+      '<div class="q-eyebrow">Última etapa</div>' +
+      '<h1 class="q-title">Perfeito! Deixe seu contato</h1>' +
+      '<p class="q-subtitle">Vou avaliar seu perfil e te responder pessoalmente no WhatsApp.</p>' +
+      '<form class="lead-form" id="lead-form">' +
+      '<input type="text" id="lead-name" placeholder="Seu nome" autocomplete="name" required />' +
+      '<input type="tel" id="lead-phone" placeholder="Seu WhatsApp (com DDD)" autocomplete="tel" required />' +
+      '<button type="submit" class="link-btn featured">Falar no WhatsApp agora</button>' +
+      '</form></div>';
+    document.getElementById('lead-form').addEventListener('submit', handleLeadSubmit);
+  }
+
+  function handleLeadSubmit(e) {
+    e.preventDefault();
+    var name = document.getElementById('lead-name').value.trim();
+    var phone = document.getElementById('lead-phone').value.trim();
+    if (!name || !phone) return;
+
+    try { submitQuizAnswers('trafego', name, phone); } catch (_) {}
+
+    var eventId = genId();
+    try { fbq('track', 'Lead', {}, { eventID: eventId }); } catch (_) {}
+    try {
+      fetch('/tracker', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, keepalive: true,
+        body: JSON.stringify({
+          event_name: 'Lead', event_id: eventId,
+          event_time: Math.floor(Date.now() / 1000),
+          event_source_url: window.location.href,
+          user_data: { fn: name, ph: phone },
+        }),
+      }).catch(function () {});
+    } catch (_) {}
+
+    window.location.href = buildWhatsAppUrl(name);
+  }
+
+  function submitQuizAnswers(path, name, phone) {
+    try {
+      fetch('/quiz-submit', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, keepalive: true,
+        body: JSON.stringify({ path: path, answers: state.answers, name: name, phone: phone }),
+      }).catch(function () {});
+    } catch (_) {}
+  }
+
+  function buildWhatsAppUrl(name) {
+    var lines = ['Olá! Me chamo ' + name + ' e fiz o quiz no site.'];
+    FLOWS.trafego.forEach(function (q) {
+      var val = state.answers[q.id];
+      var label = (LABELS[q.id] && LABELS[q.id][val]) || val;
+      lines.push(q.title + ' ' + label);
+    });
+    var text = lines.join('\n');
+    return 'https://wa.me/' + WHATSAPP_NUMBER + '?text=' + encodeURIComponent(text);
+  }
+
+  function trackViewContent(path) {
+    var id = genId();
+    try { fbq('track', 'ViewContent', { content_name: path }, { eventID: id }); } catch (_) {}
+    fetch('/tracker', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        event_name: 'ViewContent', event_id: id,
+        event_time: Math.floor(Date.now() / 1000),
+        event_source_url: window.location.href, user_data: {},
+      }),
+    }).catch(function () {});
+  }
+
+  render();
+</script>
+
+</body>
+</html>
