@@ -20,7 +20,8 @@ export async function onRequestPost(context) {
       });
     }
 
-    const answersJson = JSON.stringify(body.answers || {});
+    const answers = body.answers || {};
+    const answersJson = JSON.stringify(answers);
     const now = Math.floor(Date.now() / 1000);
 
     if (env.DB) {
@@ -30,6 +31,26 @@ export async function onRequestPost(context) {
       `).bind(
         sessionId, path, answersJson, body.name || null, body.phone || null, now
       ).run();
+    }
+
+    // Planilha de controle (Google Sheets via Apps Script Web App) — só
+    // para o caminho de tráfego, o lead comercial qualificado com contato.
+    if (path === 'trafego' && body.name && body.phone && env.SHEETS_WEBHOOK_URL) {
+      context.waitUntil(
+        fetch(env.SHEETS_WEBHOOK_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            timestamp: new Date().toISOString(),
+            name: body.name,
+            phone: body.phone,
+            segmento: answers.segmento || '',
+            investe_hoje: answers.investe_hoje || '',
+            orcamento: answers.orcamento || '',
+            urgencia: answers.urgencia || '',
+          }),
+        }).catch(() => {})
+      );
     }
 
     return new Response(JSON.stringify({ ok: true }), {

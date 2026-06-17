@@ -305,12 +305,6 @@
     ],
   };
 
-  var LABELS = {};
-  [ENTRY_STEP].concat(FLOWS.trafego, FLOWS.curso, FLOWS.conteudo).forEach(function (q) {
-    LABELS[q.id] = {};
-    q.options.forEach(function (o) { LABELS[q.id][o.value] = o.label; });
-  });
-
   var state = { path: null, answers: {}, stepIndex: 0, finalSubmitted: false };
   var navStack = [];
 
@@ -348,21 +342,21 @@
     if (step.subtitle) html += '<p class="q-subtitle">' + step.subtitle + '</p>';
     html += '<div class="options-list">';
     step.options.forEach(function (o) {
-      html += '<button class="option-btn" data-value="' + o.value + '">' + o.label + '</button>';
+      html += '<button class="option-btn">' + o.label + '</button>';
     });
     html += '</div></div>';
     root.innerHTML = html;
-    root.querySelectorAll('.option-btn').forEach(function (btn) {
-      btn.addEventListener('click', function () { selectOption(step, btn.dataset.value); });
+    root.querySelectorAll('.option-btn').forEach(function (btn, idx) {
+      btn.addEventListener('click', function () { selectOption(step, step.options[idx]); });
     });
   }
 
-  function selectOption(step, value) {
+  function selectOption(step, option) {
     navStack.push({ stepIndex: state.stepIndex, path: state.path });
-    state.answers[step.id] = value;
+    state.answers[step.id] = option.label;
     if (step.id === 'entry') {
-      state.path = value;
-      try { trackViewContent(value); } catch (_) {}
+      state.path = option.value;
+      try { trackViewContent(option.value); } catch (_) {}
     }
     state.stepIndex++;
     render();
@@ -469,9 +463,7 @@
   function buildWhatsAppUrl(name) {
     var lines = ['Olá! Me chamo ' + name + ' e fiz o quiz no site.'];
     FLOWS.trafego.forEach(function (q) {
-      var val = state.answers[q.id];
-      var label = (LABELS[q.id] && LABELS[q.id][val]) || val;
-      lines.push(q.title + ' ' + label);
+      lines.push(q.title + ' ' + (state.answers[q.id] || ''));
     });
     var text = lines.join('\n');
     return 'https://wa.me/' + WHATSAPP_NUMBER + '?text=' + encodeURIComponent(text);
