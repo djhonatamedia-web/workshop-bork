@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Diagnóstico de Vendas · Djhonata Filho</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Meta Pixel -->
+  <script>
+    !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+    n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+    document,'script','https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '2168037397029380');
+    (function(){
+      var id=(crypto.randomUUID&&crypto.randomUUID())||(Date.now()+'-'+Math.random().toString(36).slice(2));
+      fbq('track','PageView',{},{eventID:id});
+      fetch('/tracker',{method:'POST',headers:{'Content-Type':'application/json'},keepalive:true,
+        body:JSON.stringify({event_name:'PageView',event_id:id,event_time:Math.floor(Date.now()/1000),event_source_url:window.location.href,user_data:{}})
+      }).catch(function(){});
+    })();
+  </script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(160deg, #0a0a0a 0%, #1a1a1a 50%, #0a0a0a 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 50% at 20% 20%, rgba(34,197,94,.07), transparent 60%),
+        radial-gradient(ellipse 50% 40% at 80% 80%, rgba(34,197,94,.05), transparent 60%);
+      pointer-events: none;
+    }
+
+    .quiz-shell {
+      width: 100%;
+      max-width: 440px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .top-bar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+
+    .back-btn {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      border: 1px solid #1f1f1f;
+      background: #111111;
+      color: #6b7280;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: border-color .18s, color .18s;
+    }
+    .back-btn:hover { border-color: #22c55e; color: #e5e7eb; }
+    .back-btn.visible { display: flex; }
+
+    .progress-track {
+      flex: 1;
+      height: 4px;
+      border-radius: 4px;
+      background: #1f1f1f;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: #22c55e;
+      border-radius: 4px;
+      transition: width .3s ease;
+    }
+
+    .step { animation: fadeSlide .25s ease; }
+    @keyframes fadeSlide {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .q-eyebrow {
+      font-size: .75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+      color: #22c55e;
+      margin-bottom: 10px;
+    }
+
+    .q-title {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: -.02em;
+      line-height: 1.3;
+      margin-bottom: 8px;
+    }
+
+    .q-subtitle {
+      font-size: .88rem;
+      color: #6b7280;
+      line-height: 1.6;
+      margin-bottom: 28px;
+    }
+
+    .options-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .option-btn, .link-btn {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      padding: 16px 18px;
+      border: 1px solid #1f1f1f;
+      border-radius: 14px;
+      background: #111111;
+      color: #e5e7eb;
+      font-size: .92rem;
+      font-weight: 600;
+      font-family: inherit;
+      text-decoration: none;
+      cursor: pointer;
+      transition: border-color .18s, background .18s, transform .1s;
+      text-align: left;
+    }
+
+    .option-btn:hover, .link-btn:hover {
+      border-color: #22c55e;
+      background: #141414;
+      color: #fff;
+    }
+
+    .option-btn:active, .link-btn:active { transform: scale(.98); }
+
+    .link-btn.featured {
+      background: #22c55e;
+      border-color: #22c55e;
+      color: #000;
+      font-weight: 700;
+      justify-content: center;
+      box-shadow: 0 4px 24px rgba(34,197,94,.25);
+    }
+
+    .link-btn.featured:hover {
+      background: #16a34a;
+      border-color: #16a34a;
+    }
+
+    .lead-form {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .lead-form input {
+      width: 100%;
+      padding: 14px 16px;
+      border: 1px solid #1f1f1f;
+      border-radius: 12px;
+      background: #111111;
+      color: #fff;
+      font-size: .92rem;
+      font-family: inherit;
+    }
+
+    .lead-form input::placeholder { color: #6b7280; }
+    .lead-form input:focus { outline: none; border-color: #22c55e; }
+    .lead-form button { margin-top: 8px; border: none; }
+
+    /* Result screen */
+    .result-icon {
+      font-size: 2.4rem;
+      margin-bottom: 14px;
+      line-height: 1;
+    }
+
+    .result-body {
+      font-size: .9rem;
+      color: #9ca3af;
+      line-height: 1.7;
+      margin-bottom: 20px;
+    }
+
+    .consequence-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+
+    .consequence-item {
+      font-size: .82rem;
+      color: #6b7280;
+      padding: 10px 14px;
+      border: 1px solid #1f1f1f;
+      border-radius: 10px;
+      line-height: 1.5;
+    }
+
+    .consequence-item::before {
+      content: '⚠ ';
+      color: #f59e0b;
+    }
+
+    .divider {
+      height: 1px;
+      background: #1f1f1f;
+      margin: 20px 0;
+    }
+
+    .cta-note {
+      font-size: .83rem;
+      color: #6b7280;
+      line-height: 1.6;
+      margin-bottom: 14px;
+    }
+
+    .footer {
+      margin-top: 28px;
+      text-align: center;
+      font-size: .7rem;
+      color: #2d2d2d;
+      letter-spacing: .02em;
+    }
+  </style>
+</head>
+<body>
+
+<div class="quiz-shell">
+  <div class="top-bar">
+    <button class="back-btn" id="back-btn" aria-label="Voltar">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+    </button>
+    <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+  </div>
+
+  <div id="step-root"></div>
+
+  <p class="footer">© 2026 · Djhonata Filho</p>
+</div>
+
+<script>
+  var WHATSAPP_NUMBER = '5548996637248';
+
+  var QUESTIONS = [
+    {
+      id: 'q1',
+      eyebrow: 'Pergunta 1 de 6',
+      title: 'Como está sua situação com tráfego pago hoje?',
+      options: [
+        { label: 'Invisto todo mês mas os resultados são inconsistentes', cat: 'METRICAS' },
+        { label: 'Já investi, parei porque estava perdendo dinheiro', cat: 'BASE' },
+        { label: 'Nunca investi — vendo pelo Instagram ou WhatsApp orgânico', cat: 'BASE' },
+        { label: 'Quero começar mas não sei por onde nem quanto investir', cat: 'BASE' },
+      ],
+    },
+    {
+      id: 'q2',
+      eyebrow: 'Pergunta 2 de 6',
+      title: 'Quando alguém clica no seu anúncio, para onde ela vai?',
+      options: [
+        { label: 'Direto para a página inicial do meu site', cat: 'FUNIL' },
+        { label: 'Para o meu WhatsApp ou DM do Instagram', cat: 'FUNIL' },
+        { label: 'Para uma página de vendas ou captura específica', cat: null },
+        { label: 'Não tenho certeza — nunca parei para verificar', cat: 'METRICAS' },
+      ],
+    },
+    {
+      id: 'q3',
+      eyebrow: 'Pergunta 3 de 6',
+      title: 'Como você define quem vê seus anúncios?',
+      options: [
+        { label: 'Coloco alguns interesses e deixo amplo — o algoritmo decide', cat: 'PUBLICO' },
+        { label: 'Uso as sugestões automáticas da plataforma', cat: 'PUBLICO' },
+        { label: 'Tenho meu cliente ideal definido e segmento com base nele', cat: null },
+        { label: 'Não sei / alguém faz isso por mim sem me explicar', cat: 'METRICAS' },
+      ],
+    },
+    {
+      id: 'q4',
+      eyebrow: 'Pergunta 4 de 6',
+      title: 'Quando você cria um anúncio, qual é seu foco principal?',
+      options: [
+        { label: 'Mostrar meu produto ou serviço e falar sobre o que ele oferece', cat: 'CRIATIVO' },
+        { label: 'Fazer algo visualmente bonito e profissional', cat: 'CRIATIVO' },
+        { label: 'Começar por uma dor ou situação que meu cliente vive', cat: null },
+        { label: 'Olho o que concorrentes fazem e adapto para mim', cat: 'CRIATIVO' },
+      ],
+    },
+    {
+      id: 'q5',
+      eyebrow: 'Pergunta 5 de 6',
+      title: 'Como você sabe se uma campanha está dando resultado?',
+      options: [
+        { label: 'Vejo curtidas, alcance e visualizações', cat: 'METRICAS' },
+        { label: 'Espero ver se as vendas aumentaram no geral', cat: 'METRICAS' },
+        { label: 'Acompanho custo por lead e custo por venda', cat: null },
+        { label: 'Não acompanho — é complicado demais para mim', cat: 'METRICAS' },
+      ],
+    },
+    {
+      id: 'q6',
+      eyebrow: 'Última pergunta',
+      title: 'Qual frase descreve melhor o que você sente hoje?',
+      options: [
+        { label: '"Tenho cliques mas as pessoas chegam e não compram"', cat: 'FUNIL' },
+        { label: '"Gasto com anúncios mas não sei se está funcionando de verdade"', cat: 'METRICAS' },
+        { label: '"Consigo atenção mas os leads não são meu público ideal"', cat: 'PUBLICO' },
+        { label: '"Meus anúncios mal recebem cliques — ninguém para para ver"', cat: 'CRIATIVO' },
+      ],
+    },
+  ];
+
+  var PRIORITY = ['METRICAS', 'FUNIL', 'PUBLICO', 'CRIATIVO', 'BASE'];
+
+  var DIAGNOSES = {
+    FUNIL: {
+      icon: '🪣',
+      title: 'Seu tráfego está saindo pelo ralo',
+      body: 'Você consegue fazer pessoas clicarem — o problema está em onde elas chegam depois. A home do site tem dezenas de distrações, o WhatsApp sem script recebe o lead frio, e uma página desalinhada com o anúncio quebra a confiança antes de qualquer venda acontecer.',
+      consequences: [
+        'Você paga por cada clique, mas converte uma fração do potencial real',
+        'Leads que chegam confusos raramente voltam a ser impactados',
+        'Quanto mais você escala o orçamento, mais escala o desperdício',
+      ],
+    },
+    PUBLICO: {
+      icon: '🎯',
+      title: 'Você está pagando para falar com quem não vai comprar',
+      body: 'Algoritmos não adivinham quem é seu comprador ideal — eles otimizam para quem clica. Com segmentação ampla ou automática, você atrai curiosidade e pouca intenção de compra real. O resultado é volume de interação e silêncio nas vendas.',
+      consequences: [
+        'CPL alto com leads de baixíssima qualidade — custo sem retorno',
+        'Escalar orçamento vai escalar o problema, não as vendas',
+        'Você nunca descobre se é o produto, o criativo ou o público o problema',
+      ],
+    },
+    CRIATIVO: {
+      icon: '📺',
+      title: 'Seus anúncios não param o scroll — e o algoritmo te pune por isso',
+      body: 'No feed de hoje você tem entre 1 e 2 segundos. Criativos que mostram o produto ou "ficaram bonitos" não criam o gatilho de identificação que faz alguém parar e pensar "isso é sobre mim". Baixo CTR significa que o algoritmo distribui menos e você paga mais por resultado.',
+      consequences: [
+        'CPM alto e CTR baixo — o algoritmo entende que seu anúncio não é relevante',
+        'Você troca criativos sem direção, sem saber o que realmente funciona',
+        'Concorrentes com copy melhor chegam mais barato ao mesmo público',
+      ],
+    },
+    METRICAS: {
+      icon: '🌫️',
+      title: 'Você está tomando decisões de dinheiro no escuro',
+      body: 'Alcance e curtidas medem popularidade, não resultado. Sem saber seu custo por lead, custo por venda e quais criativos realmente convertem, você não tem como escalar o que funciona nem parar o que drena. Cada mês que passa é um ciclo de tentativa e erro que consome budget sem aprendizado.',
+      consequences: [
+        'Impossível saber se o problema é o anúncio, o público ou a página',
+        'Você continua investindo em campanhas que parecem boas mas não convertem',
+        'Qualquer aumento de orçamento é um risco — pode escalar o erro junto',
+      ],
+    },
+    BASE: {
+      icon: '🏗️',
+      title: 'Você quer crescer, mas a fundação ainda não está no lugar',
+      body: 'Investir em tráfego sem pixel instalado, oferta clara e uma página que converte é como colocar combustível em um carro sem motor. O dinheiro vai embora, o algoritmo não tem dados para otimizar, e você não tem base para saber se algo funcionou ou não.',
+      consequences: [
+        'O algoritmo não tem dados para otimizar — você paga o CPM mais caro',
+        'Sem uma página que converte, nenhum orçamento gera retorno consistente',
+        'Você vai queimar o budget de testes antes de aprender o básico',
+      ],
+    },
+  };
+
+  var state = { answers: {}, stepIndex: 0, diagnosis: null, name: '', submitted: false };
+  var navStack = [];
+  var TOTAL_STEPS = QUESTIONS.length + 1; // 6 perguntas + 1 captura
+
+  var root = document.getElementById('step-root');
+  var backBtn = document.getElementById('back-btn');
+  var progressFill = document.getElementById('progress-fill');
+
+  function genId() {
+    return (crypto.randomUUID && crypto.randomUUID()) || (Date.now() + '-' + Math.random().toString(36).slice(2));
+  }
+
+  function escapeHtml(str) {
+    return String(str || '').replace(/[&<>"']/g, function(c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+
+  function computeDiagnosis() {
+    var score = { METRICAS: 0, FUNIL: 0, PUBLICO: 0, CRIATIVO: 0, BASE: 0 };
+    QUESTIONS.forEach(function(q) {
+      var a = state.answers[q.id];
+      if (a && a.cat) score[a.cat]++;
+    });
+    var max = -1;
+    var result = 'METRICAS';
+    PRIORITY.forEach(function(key) {
+      if (score[key] > max) { max = score[key]; result = key; }
+    });
+    return result;
+  }
+
+  function updateChrome() {
+    var onResult = state.stepIndex > QUESTIONS.length;
+    backBtn.classList.toggle('visible', navStack.length > 0 && !onResult);
+    var pct = Math.min(state.stepIndex / TOTAL_STEPS * 100, 100);
+    progressFill.style.width = pct + '%';
+  }
+
+  function render() {
+    updateChrome();
+    if (state.stepIndex < QUESTIONS.length) {
+      renderQuestion(QUESTIONS[state.stepIndex]);
+    } else if (state.stepIndex === QUESTIONS.length) {
+      renderCapture();
+    } else {
+      renderResult();
+    }
+  }
+
+  function renderQuestion(q) {
+    var html = '<div class="step">';
+    html += '<div class="q-eyebrow">' + q.eyebrow + '</div>';
+    html += '<h1 class="q-title">' + q.title + '</h1>';
+    html += '<div class="options-list">';
+    q.options.forEach(function(o) {
+      html += '<button class="option-btn">' + escapeHtml(o.label) + '</button>';
+    });
+    html += '</div></div>';
+    root.innerHTML = html;
+    root.querySelectorAll('.option-btn').forEach(function(btn, idx) {
+      btn.addEventListener('click', function() {
+        navStack.push({ stepIndex: state.stepIndex, answers: JSON.parse(JSON.stringify(state.answers)) });
+        state.answers[q.id] = { label: q.options[idx].label, cat: q.options[idx].cat, idx: idx };
+        state.stepIndex++;
+        render();
+      });
+    });
+  }
+
+  function renderCapture() {
+    state.diagnosis = computeDiagnosis();
+    var html = '<div class="step">';
+    html += '<div class="q-eyebrow">Último passo</div>';
+    html += '<h1 class="q-title">Seu diagnóstico está pronto</h1>';
+    html += '<p class="q-subtitle">Deixe seu nome e WhatsApp para ver o resultado personalizado.</p>';
+    html += '<form class="lead-form" id="lead-form">';
+    html += '<input type="text" id="lead-name" placeholder="Seu nome" autocomplete="name" required />';
+    html += '<input type="tel" id="lead-phone" placeholder="WhatsApp com DDD" autocomplete="tel" required />';
+    html += '<button type="submit" class="link-btn featured">Ver meu diagnóstico →</button>';
+    html += '</form></div>';
+    root.innerHTML = html;
+    document.getElementById('lead-form').addEventListener('submit', handleCapture);
+  }
+
+  function handleCapture(e) {
+    e.preventDefault();
+    var name = document.getElementById('lead-name').value.trim();
+    var phone = document.getElementById('lead-phone').value.trim();
+    if (!name || !phone) return;
+    state.name = name;
+
+    if (!state.submitted) {
+      state.submitted = true;
+      submitToBackend(name, phone);
+      trackLead(name, phone);
+    }
+
+    state.stepIndex++;
+    render();
+  }
+
+  function submitToBackend(name, phone) {
+    var answersForSubmit = {};
+    QUESTIONS.forEach(function(q) {
+      if (state.answers[q.id]) answersForSubmit[q.id] = state.answers[q.id].label;
+    });
+    fetch('/quiz-submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      keepalive: true,
+      body: JSON.stringify({
+        path: 'diagnostico',
+        diagnosis: state.diagnosis,
+        name: name,
+        phone: phone,
+        answers: answersForSubmit,
+      }),
+    }).catch(function() {});
+  }
+
+  function trackLead(name, phone) {
+    var id = genId();
+    try { fbq('track', 'Lead', {}, { eventID: id }); } catch (_) {}
+    try {
+      fetch('/tracker', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        keepalive: true,
+        body: JSON.stringify({
+          event_name: 'Lead', event_id: id,
+          event_time: Math.floor(Date.now() / 1000),
+          event_source_url: window.location.href,
+          user_data: { fn: name, ph: phone },
+        }),
+      }).catch(function() {});
+    } catch (_) {}
+  }
+
+  function renderResult() {
+    var d = DIAGNOSES[state.diagnosis];
+    var firstName = escapeHtml(state.name.split(' ')[0]);
+
+    // Q1 index 0 = "Invisto todo mês" / index 1 = "Já investi, parei"
+    // → perfil de quem já gasta dinheiro → CTA gestão
+    var q1 = state.answers.q1;
+    var isAdvanced = q1 && (q1.idx === 0 || q1.idx === 1);
+
+    var waMsg = encodeURIComponent(
+      'Olá Djhonata! Fiz o quiz de diagnóstico e meu resultado foi: ' + d.title + '. Quero saber mais.'
+    );
+    var waLink = 'https://wa.me/' + WHATSAPP_NUMBER + '?text=' + waMsg;
+
+    var ctaHtml;
+    if (isAdvanced) {
+      ctaHtml =
+        '<p class="cta-note">Para corrigir esse erro no seu negócio específico, você precisa de uma gestão profissional — alguém que monte a estrutura certa, acompanhe os números e escale o que funcionar.</p>' +
+        '<a href="' + waLink + '" target="_blank" rel="noopener" class="link-btn featured">Quero uma gestão profissional</a>' +
+        '<a href="/vendas" class="link-btn">Prefiro aprender a corrigir sozinho</a>';
+    } else {
+      ctaHtml =
+        '<p class="cta-note">A boa notícia: esse erro tem solução direta. No curso você aprende a montar a estrutura certa do zero, com método e exemplos reais do mercado.</p>' +
+        '<a href="/vendas" class="link-btn featured">Quero aprender a corrigir isso</a>' +
+        '<a href="' + waLink + '" target="_blank" rel="noopener" class="link-btn">Prefiro contratar um especialista</a>';
+    }
+
+    var conseqHtml = d.consequences.map(function(c) {
+      return '<div class="consequence-item">' + escapeHtml(c) + '</div>';
+    }).join('');
+
+    root.innerHTML =
+      '<div class="step">' +
+      '<div class="q-eyebrow">Seu diagnóstico, ' + firstName + '</div>' +
+      '<div class="result-icon">' + d.icon + '</div>' +
+      '<h1 class="q-title">' + escapeHtml(d.title) + '</h1>' +
+      '<p class="result-body">' + escapeHtml(d.body) + '</p>' +
+      '<div class="consequence-list">' + conseqHtml + '</div>' +
+      '<div class="divider"></div>' +
+      '<div class="options-list">' + ctaHtml + '</div>' +
+      '</div>';
+  }
+
+  function goBack() {
+    if (navStack.length === 0 || state.stepIndex > QUESTIONS.length) return;
+    var prev = navStack.pop();
+    state.stepIndex = prev.stepIndex;
+    state.answers = prev.answers;
+    render();
+  }
+  backBtn.addEventListener('click', goBack);
+
+  render();
+</script>
+
+</body>
+</html>
