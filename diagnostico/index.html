@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Diagnóstico de Vendas · Djhonata Filho</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;0,14..32,800;0,14..32,900;1,14..32,400&display=swap" rel="stylesheet" />
 
   <!-- Meta Pixel -->
   <script>
@@ -24,346 +24,635 @@
   </script>
 
   <style>
+    /* ─── Tokens ──────────────────────────────────────── */
+    :root {
+      --g:     #22c55e;
+      --g-mid: #4ade80;
+      --g-pale:#86efac;
+      --g-glow:rgba(34,197,94,.18);
+      --g-sm:  rgba(34,197,94,.09);
+      --amber: #f59e0b;
+      --bg:    #06060a;
+      --s1:    #0c0c12;
+      --s2:    #121219;
+      --s3:    #17171f;
+      --bd:    rgba(255,255,255,.06);
+      --bd-h:  rgba(34,197,94,.4);
+      --tx:    #f0f0f5;
+      --tx2:   #9898b0;
+      --tx3:   #4b4b62;
+    }
+
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      font-family: 'Inter', sans-serif;
-      background: linear-gradient(160deg, #0a0a0a 0%, #1a1a1a 50%, #0a0a0a 100%);
-      min-height: 100vh;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--tx);
+      min-height: 100dvh;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 24px;
-      position: relative;
+      padding: 32px 20px 64px;
       overflow-x: hidden;
+      position: relative;
     }
 
+    /* ─── Atmosphere ──────────────────────────────────── */
     body::before {
       content: '';
       position: fixed;
       inset: 0;
       background:
-        radial-gradient(ellipse 60% 50% at 20% 20%, rgba(34,197,94,.07), transparent 60%),
-        radial-gradient(ellipse 50% 40% at 80% 80%, rgba(34,197,94,.05), transparent 60%);
+        radial-gradient(ellipse 70% 60% at 10% 0%,   rgba(34,197,94,.07) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 90% 100%,  rgba(34,197,94,.05) 0%, transparent 60%),
+        radial-gradient(ellipse 40% 30% at 50% 50%,   rgba(34,197,94,.02) 0%, transparent 70%);
       pointer-events: none;
+      z-index: 0;
     }
 
-    .quiz-shell {
+    /* subtle grid */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,.012) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.012) 1px, transparent 1px);
+      background-size: 44px 44px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ─── Shell ───────────────────────────────────────── */
+    .shell {
       width: 100%;
-      max-width: 440px;
+      max-width: 460px;
       position: relative;
       z-index: 1;
     }
 
-    .top-bar {
-      display: flex;
+    /* ─── Top chrome ──────────────────────────────────── */
+    .chrome {
+      display: none;
       align-items: center;
-      gap: 12px;
-      margin-bottom: 28px;
+      gap: 14px;
+      margin-bottom: 36px;
     }
+    .chrome.show { display: flex; }
 
     .back-btn {
       display: none;
       align-items: center;
       justify-content: center;
-      width: 32px;
-      height: 32px;
-      border-radius: 8px;
-      border: 1px solid #1f1f1f;
-      background: #111111;
-      color: #6b7280;
+      width: 34px; height: 34px;
+      border-radius: 10px;
+      border: 1px solid var(--bd);
+      background: var(--s1);
+      color: var(--tx3);
       cursor: pointer;
       flex-shrink: 0;
-      transition: border-color .18s, color .18s;
+      transition: border-color .18s, color .18s, background .18s;
     }
-    .back-btn:hover { border-color: #22c55e; color: #e5e7eb; }
-    .back-btn.visible { display: flex; }
+    .back-btn:hover { border-color: var(--bd-h); color: var(--tx); background: var(--s2); }
+    .back-btn.show { display: flex; }
 
-    .progress-track {
-      flex: 1;
-      height: 4px;
-      border-radius: 4px;
-      background: #1f1f1f;
+    .prog-wrap { flex: 1; display: flex; flex-direction: column; gap: 7px; }
+    .prog-label {
+      font-size: .67rem;
+      font-weight: 700;
+      letter-spacing: .07em;
+      text-transform: uppercase;
+      color: var(--tx3);
+      transition: color .3s;
+    }
+    .prog-label.done { color: var(--g); }
+    .prog-track {
+      height: 2px;
+      background: var(--s3);
+      border-radius: 2px;
       overflow: hidden;
     }
-    .progress-fill {
+    .prog-fill {
       height: 100%;
       width: 0%;
-      background: #22c55e;
-      border-radius: 4px;
-      transition: width .3s ease;
+      background: linear-gradient(90deg, var(--g), var(--g-mid));
+      border-radius: 2px;
+      transition: width .45s cubic-bezier(.4,0,.2,1);
+      box-shadow: 0 0 10px rgba(34,197,94,.5);
     }
 
-    .step { animation: fadeSlide .25s ease; }
-    @keyframes fadeSlide {
-      from { opacity: 0; transform: translateY(8px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
+    /* ─── Animations ──────────────────────────────────── */
+    @keyframes fwd  { from{opacity:0;transform:translateX(22px)} to{opacity:1;transform:translateX(0)} }
+    @keyframes back { from{opacity:0;transform:translateX(-22px)} to{opacity:1;transform:translateX(0)} }
+    @keyframes rise { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes spin { to{transform:rotate(360deg)} }
+    @keyframes pulse{0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(.6)} }
+    @keyframes glow { 0%,100%{box-shadow:0 0 20px var(--g-glow)} 50%{box-shadow:0 0 40px rgba(34,197,94,.3)} }
 
-    .q-eyebrow {
-      font-size: .75rem;
-      font-weight: 600;
+    .anim-fwd  { animation: fwd  .28s cubic-bezier(.4,0,.2,1) both; }
+    .anim-back { animation: back .28s cubic-bezier(.4,0,.2,1) both; }
+    .anim-rise { animation: rise .32s cubic-bezier(.4,0,.2,1) both; }
+
+    /* ─── Eyebrow ─────────────────────────────────────── */
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-size: .7rem;
+      font-weight: 700;
+      letter-spacing: .08em;
       text-transform: uppercase;
-      letter-spacing: .04em;
-      color: #22c55e;
+      color: var(--g);
+      margin-bottom: 14px;
+    }
+    .dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: var(--g);
+      box-shadow: 0 0 5px var(--g);
+      animation: pulse 2.2s ease infinite;
+    }
+
+    /* ─── Typography ──────────────────────────────────── */
+    .headline {
+      font-size: 1.55rem;
+      font-weight: 800;
+      letter-spacing: -.04em;
+      line-height: 1.22;
+      color: var(--tx);
       margin-bottom: 10px;
     }
-
-    .q-title {
-      font-size: 1.4rem;
-      font-weight: 700;
-      color: #fff;
-      letter-spacing: -.02em;
-      line-height: 1.3;
-      margin-bottom: 8px;
-    }
-
-    .q-subtitle {
+    .sub {
       font-size: .88rem;
-      color: #6b7280;
-      line-height: 1.6;
+      color: var(--tx2);
+      line-height: 1.7;
       margin-bottom: 28px;
     }
 
-    .options-list {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
+    .grad {
+      background: linear-gradient(125deg, #22c55e 0%, #86efac 55%, #4ade80 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
 
-    .option-btn, .link-btn {
+    /* ─── Options ─────────────────────────────────────── */
+    .opts { display: flex; flex-direction: column; gap: 9px; }
+
+    .opt {
       display: flex;
       align-items: center;
-      width: 100%;
-      padding: 16px 18px;
-      border: 1px solid #1f1f1f;
+      gap: 13px;
+      padding: 15px 16px;
+      border: 1px solid var(--bd);
       border-radius: 14px;
-      background: #111111;
-      color: #e5e7eb;
+      background: var(--s1);
+      color: var(--tx2);
+      font-family: inherit;
+      cursor: pointer;
+      text-align: left;
+      transition: border-color .18s, background .18s, color .18s, box-shadow .18s, transform .12s;
+      position: relative;
+      overflow: hidden;
+    }
+    .opt::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(34,197,94,.06) 0%, transparent 60%);
+      opacity: 0;
+      transition: opacity .18s;
+    }
+    .opt:hover { border-color: var(--bd-h); background: var(--s2); color: var(--tx); box-shadow: 0 0 0 3px var(--g-sm); }
+    .opt:hover::before { opacity: 1; }
+    .opt:active { transform: scale(.983); }
+
+    .opt-letter {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 28px; height: 28px;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,.07);
+      background: rgba(255,255,255,.03);
+      font-size: .7rem;
+      font-weight: 800;
+      letter-spacing: .03em;
+      color: var(--tx3);
+      transition: background .18s, border-color .18s, color .18s;
+    }
+    .opt:hover .opt-letter {
+      background: rgba(34,197,94,.14);
+      border-color: rgba(34,197,94,.35);
+      color: var(--g);
+    }
+    .opt-text { font-size: .88rem; font-weight: 500; line-height: 1.45; }
+
+    /* ─── Buttons ─────────────────────────────────────── */
+    .btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      padding: 17px 20px;
+      border: 1px solid var(--bd);
+      border-radius: 14px;
+      background: var(--s1);
+      color: var(--tx2);
       font-size: .92rem;
       font-weight: 600;
       font-family: inherit;
       text-decoration: none;
       cursor: pointer;
-      transition: border-color .18s, background .18s, transform .1s;
-      text-align: left;
+      transition: border-color .18s, background .18s, color .18s, box-shadow .18s, transform .12s;
+      text-align: center;
     }
+    .btn:hover { border-color: var(--bd-h); background: var(--s2); color: var(--tx); }
+    .btn:active { transform: scale(.98); }
 
-    .option-btn:hover, .link-btn:hover {
-      border-color: #22c55e;
-      background: #141414;
-      color: #fff;
-    }
-
-    .option-btn:active, .link-btn:active { transform: scale(.98); }
-
-    .link-btn.featured {
-      background: #22c55e;
-      border-color: #22c55e;
+    .btn-primary {
+      background: var(--g);
+      border-color: var(--g);
       color: #000;
       font-weight: 700;
-      justify-content: center;
-      box-shadow: 0 4px 24px rgba(34,197,94,.25);
+      font-size: .95rem;
+      box-shadow: 0 4px 28px rgba(34,197,94,.28);
+      animation: glow 3s ease infinite;
     }
+    .btn-primary:hover { background: var(--g-mid); border-color: var(--g-mid); box-shadow: 0 6px 36px rgba(34,197,94,.4); color: #000; }
 
-    .link-btn.featured:hover {
-      background: #16a34a;
-      border-color: #16a34a;
+    /* ─── Form ────────────────────────────────────────── */
+    .form { display: flex; flex-direction: column; gap: 10px; }
+    .field {
+      position: relative;
     }
-
-    .lead-form {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .lead-form input {
-      width: 100%;
-      padding: 14px 16px;
-      border: 1px solid #1f1f1f;
-      border-radius: 12px;
-      background: #111111;
-      color: #fff;
-      font-size: .92rem;
-      font-family: inherit;
-    }
-
-    .lead-form input::placeholder { color: #6b7280; }
-    .lead-form input:focus { outline: none; border-color: #22c55e; }
-    .lead-form button { margin-top: 8px; border: none; }
-
-    /* Result screen */
-    .result-icon {
-      font-size: 2.4rem;
-      margin-bottom: 14px;
+    .field-icon {
+      position: absolute;
+      left: 16px; top: 50%;
+      transform: translateY(-50%);
+      font-size: .95rem;
+      pointer-events: none;
       line-height: 1;
     }
-
-    .result-body {
+    .field input {
+      width: 100%;
+      padding: 15px 16px 15px 48px;
+      border: 1px solid var(--bd);
+      border-radius: 13px;
+      background: var(--s1);
+      color: var(--tx);
       font-size: .9rem;
-      color: #9ca3af;
-      line-height: 1.7;
-      margin-bottom: 20px;
+      font-family: inherit;
+      transition: border-color .18s, box-shadow .18s;
+    }
+    .field input::placeholder { color: var(--tx3); }
+    .field input:focus { outline: none; border-color: rgba(34,197,94,.45); box-shadow: 0 0 0 3px var(--g-sm); }
+    .form .btn { margin-top: 4px; border: none; }
+
+    /* ─── Intro screen ────────────────────────────────── */
+    .intro-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border: 1px solid rgba(34,197,94,.22);
+      border-radius: 999px;
+      background: rgba(34,197,94,.05);
+      font-size: .7rem;
+      font-weight: 700;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      color: var(--g);
+      margin-bottom: 22px;
     }
 
-    .consequence-list {
+    .intro-hl {
+      font-size: clamp(1.75rem, 5vw, 2.2rem);
+      font-weight: 900;
+      letter-spacing: -.05em;
+      line-height: 1.14;
+      color: var(--tx);
+      margin-bottom: 18px;
+    }
+
+    .intro-body {
+      font-size: .9rem;
+      color: var(--tx2);
+      line-height: 1.72;
+      margin-bottom: 26px;
+    }
+
+    .checks {
       display: flex;
       flex-direction: column;
-      gap: 8px;
-      margin-bottom: 24px;
+      gap: 11px;
+      margin-bottom: 32px;
+    }
+    .check {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      font-size: .86rem;
+      color: var(--tx2);
+      line-height: 1.55;
+    }
+    .check-icon {
+      width: 22px; height: 22px;
+      border-radius: 7px;
+      background: rgba(34,197,94,.1);
+      border: 1px solid rgba(34,197,94,.18);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .7rem;
+      color: var(--g);
+      flex-shrink: 0;
+      margin-top: 1px;
     }
 
-    .consequence-item {
+    .intro-footer {
+      margin-top: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      font-size: .71rem;
+      color: var(--tx3);
+    }
+    .sep { color: var(--s3); }
+
+    /* ─── Processing ──────────────────────────────────── */
+    .proc {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 56px 0 40px;
+      gap: 22px;
+    }
+    .proc-ring {
+      width: 52px; height: 52px;
+      border-radius: 50%;
+      border: 2px solid var(--s3);
+      border-top-color: var(--g);
+      animation: spin .85s linear infinite;
+      box-shadow: 0 0 20px var(--g-glow);
+    }
+    .proc-text {
+      font-size: .95rem;
+      font-weight: 600;
+      color: var(--tx2);
+      letter-spacing: -.01em;
+    }
+    .proc-sub {
+      font-size: .76rem;
+      color: var(--tx3);
+      letter-spacing: .01em;
+    }
+
+    /* ─── Result ──────────────────────────────────────── */
+    .res-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 5px 13px;
+      border: 1px solid rgba(34,197,94,.2);
+      border-radius: 999px;
+      background: rgba(34,197,94,.05);
+      font-size: .67rem;
+      font-weight: 700;
+      letter-spacing: .07em;
+      text-transform: uppercase;
+      color: var(--g);
+      margin-bottom: 22px;
+    }
+
+    .res-icon-wrap {
+      width: 70px; height: 70px;
+      border-radius: 20px;
+      background: var(--s1);
+      border: 1px solid rgba(255,255,255,.07);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.9rem;
+      margin-bottom: 20px;
+      position: relative;
+      box-shadow: 0 0 0 1px rgba(34,197,94,.12), 0 0 50px var(--g-glow);
+      animation: glow 3.5s ease infinite;
+    }
+    .res-icon-wrap::after {
+      content: '';
+      position: absolute;
+      inset: -1px;
+      border-radius: 21px;
+      background: linear-gradient(135deg, rgba(34,197,94,.25) 0%, transparent 55%);
+      z-index: -1;
+    }
+
+    .res-hl {
+      font-size: 1.6rem;
+      font-weight: 900;
+      letter-spacing: -.04em;
+      line-height: 1.2;
+      margin-bottom: 14px;
+    }
+
+    .res-body {
+      font-size: .87rem;
+      color: var(--tx2);
+      line-height: 1.78;
+      margin-bottom: 22px;
+    }
+
+    .cons-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 26px; }
+
+    .con {
+      display: flex;
+      align-items: flex-start;
+      gap: 11px;
+      padding: 12px 14px;
+      border: 1px solid rgba(245,158,11,.1);
+      border-radius: 12px;
+      background: rgba(245,158,11,.04);
       font-size: .82rem;
-      color: #6b7280;
-      padding: 10px 14px;
-      border: 1px solid #1f1f1f;
-      border-radius: 10px;
-      line-height: 1.5;
+      color: var(--tx2);
+      line-height: 1.55;
     }
-
-    .consequence-item::before {
-      content: '⚠ ';
-      color: #f59e0b;
-    }
+    .con-icon { color: var(--amber); flex-shrink: 0; font-size: .8rem; margin-top: 2px; }
 
     .divider {
-      height: 1px;
-      background: #1f1f1f;
-      margin: 20px 0;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin: 22px 0;
+    }
+    .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--s3); }
+    .div-label {
+      font-size: .65rem;
+      font-weight: 700;
+      letter-spacing: .09em;
+      text-transform: uppercase;
+      color: var(--tx3);
+      white-space: nowrap;
     }
 
     .cta-note {
       font-size: .83rem;
-      color: #6b7280;
-      line-height: 1.6;
+      color: var(--tx2);
+      line-height: 1.68;
       margin-bottom: 14px;
     }
 
+    /* ─── Footer ──────────────────────────────────────── */
     .footer {
-      margin-top: 28px;
-      text-align: center;
-      font-size: .7rem;
-      color: #2d2d2d;
-      letter-spacing: .02em;
+      margin-top: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
     }
+    .footer-mark {
+      width: 22px; height: 22px;
+      border-radius: 7px;
+      background: rgba(34,197,94,.1);
+      border: 1px solid rgba(34,197,94,.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .7rem;
+      font-weight: 900;
+      color: var(--g);
+    }
+    .footer-text { font-size: .69rem; color: var(--tx3); letter-spacing: .02em; }
   </style>
 </head>
 <body>
 
-<div class="quiz-shell">
-  <div class="top-bar">
+<div class="shell">
+  <!-- Chrome (hidden on intro + result) -->
+  <div class="chrome" id="chrome">
     <button class="back-btn" id="back-btn" aria-label="Voltar">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M19 12H5M12 19l-7-7 7-7"/>
+      </svg>
     </button>
-    <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+    <div class="prog-wrap">
+      <div class="prog-label" id="prog-label">Diagnóstico</div>
+      <div class="prog-track"><div class="prog-fill" id="prog-fill"></div></div>
+    </div>
   </div>
 
-  <div id="step-root"></div>
+  <!-- Content -->
+  <div id="root"></div>
 
-  <p class="footer">© 2026 · Djhonata Filho</p>
+  <!-- Footer -->
+  <div class="footer">
+    <div class="footer-mark">D</div>
+    <span class="footer-text">Djhonata.mkt &nbsp;·&nbsp; © 2026</span>
+  </div>
 </div>
 
 <script>
-  var WHATSAPP_NUMBER = '5548996637248';
+(function () {
+  var WA = '5548996637248';
+  var LETTERS = ['A', 'B', 'C', 'D'];
+  var S = { INTRO: -1, PROCESSING: 100, RESULT: 101 };
 
-  var QUESTIONS = [
+  /* ── Questions ─────────────────────────────────────── */
+  var QS = [
     {
-      id: 'q1',
-      eyebrow: 'Pergunta 1 de 6',
+      id: 'q1', eyebrow: 'Pergunta 1 de 6',
       title: 'Como está sua situação com tráfego pago hoje?',
       options: [
-        { label: 'Invisto todo mês mas os resultados são inconsistentes', cat: 'METRICAS' },
-        { label: 'Já investi, parei porque estava perdendo dinheiro', cat: 'BASE' },
-        { label: 'Nunca investi — vendo pelo Instagram ou WhatsApp orgânico', cat: 'BASE' },
-        { label: 'Quero começar mas não sei por onde nem quanto investir', cat: 'BASE' },
+        { t: 'Invisto todo mês mas os resultados são inconsistentes',        cat: 'METRICAS' },
+        { t: 'Já investi, parei porque estava perdendo dinheiro',            cat: 'BASE'     },
+        { t: 'Nunca investi — vendo pelo Instagram ou WhatsApp orgânico',    cat: 'BASE'     },
+        { t: 'Quero começar mas não sei por onde nem quanto investir',       cat: 'BASE'     },
       ],
     },
     {
-      id: 'q2',
-      eyebrow: 'Pergunta 2 de 6',
+      id: 'q2', eyebrow: 'Pergunta 2 de 6',
       title: 'Quando alguém clica no seu anúncio, para onde ela vai?',
       options: [
-        { label: 'Direto para a página inicial do meu site', cat: 'FUNIL' },
-        { label: 'Para o meu WhatsApp ou DM do Instagram', cat: 'FUNIL' },
-        { label: 'Para uma página de vendas ou captura específica', cat: null },
-        { label: 'Não tenho certeza — nunca parei para verificar', cat: 'METRICAS' },
+        { t: 'Direto para a página inicial do meu site',                    cat: 'FUNIL'    },
+        { t: 'Para o meu WhatsApp ou DM do Instagram',                      cat: 'FUNIL'    },
+        { t: 'Para uma página de vendas ou captura específica',             cat: null       },
+        { t: 'Não tenho certeza — nunca parei para verificar',              cat: 'METRICAS' },
       ],
     },
     {
-      id: 'q3',
-      eyebrow: 'Pergunta 3 de 6',
+      id: 'q3', eyebrow: 'Pergunta 3 de 6',
       title: 'Como você define quem vê seus anúncios?',
       options: [
-        { label: 'Coloco alguns interesses e deixo amplo — o algoritmo decide', cat: 'PUBLICO' },
-        { label: 'Uso as sugestões automáticas da plataforma', cat: 'PUBLICO' },
-        { label: 'Tenho meu cliente ideal definido e segmento com base nele', cat: null },
-        { label: 'Não sei / alguém faz isso por mim sem me explicar', cat: 'METRICAS' },
+        { t: 'Coloco alguns interesses e deixo amplo — o algoritmo decide', cat: 'PUBLICO'  },
+        { t: 'Uso as sugestões automáticas da plataforma',                  cat: 'PUBLICO'  },
+        { t: 'Tenho meu cliente ideal definido e segmento com base nele',   cat: null       },
+        { t: 'Não sei / alguém faz isso por mim sem me explicar',           cat: 'METRICAS' },
       ],
     },
     {
-      id: 'q4',
-      eyebrow: 'Pergunta 4 de 6',
+      id: 'q4', eyebrow: 'Pergunta 4 de 6',
       title: 'Quando você cria um anúncio, qual é seu foco principal?',
       options: [
-        { label: 'Mostrar meu produto ou serviço e falar sobre o que ele oferece', cat: 'CRIATIVO' },
-        { label: 'Fazer algo visualmente bonito e profissional', cat: 'CRIATIVO' },
-        { label: 'Começar por uma dor ou situação que meu cliente vive', cat: null },
-        { label: 'Olho o que concorrentes fazem e adapto para mim', cat: 'CRIATIVO' },
+        { t: 'Mostrar meu produto ou serviço e falar sobre o que ele oferece', cat: 'CRIATIVO' },
+        { t: 'Fazer algo visualmente bonito e profissional',                    cat: 'CRIATIVO' },
+        { t: 'Começar por uma dor ou situação que meu cliente vive',           cat: null       },
+        { t: 'Olho o que concorrentes fazem e adapto para mim',               cat: 'CRIATIVO' },
       ],
     },
     {
-      id: 'q5',
-      eyebrow: 'Pergunta 5 de 6',
+      id: 'q5', eyebrow: 'Pergunta 5 de 6',
       title: 'Como você sabe se uma campanha está dando resultado?',
       options: [
-        { label: 'Vejo curtidas, alcance e visualizações', cat: 'METRICAS' },
-        { label: 'Espero ver se as vendas aumentaram no geral', cat: 'METRICAS' },
-        { label: 'Acompanho custo por lead e custo por venda', cat: null },
-        { label: 'Não acompanho — é complicado demais para mim', cat: 'METRICAS' },
+        { t: 'Vejo curtidas, alcance e visualizações',                      cat: 'METRICAS' },
+        { t: 'Espero ver se as vendas aumentaram no geral',                 cat: 'METRICAS' },
+        { t: 'Acompanho custo por lead e custo por venda',                  cat: null       },
+        { t: 'Não acompanho — é complicado demais para mim',               cat: 'METRICAS' },
       ],
     },
     {
-      id: 'q6',
-      eyebrow: 'Última pergunta',
+      id: 'q6', eyebrow: 'Última pergunta',
       title: 'Qual frase descreve melhor o que você sente hoje?',
       options: [
-        { label: '"Tenho cliques mas as pessoas chegam e não compram"', cat: 'FUNIL' },
-        { label: '"Gasto com anúncios mas não sei se está funcionando de verdade"', cat: 'METRICAS' },
-        { label: '"Consigo atenção mas os leads não são meu público ideal"', cat: 'PUBLICO' },
-        { label: '"Meus anúncios mal recebem cliques — ninguém para para ver"', cat: 'CRIATIVO' },
+        { t: '"Tenho cliques mas as pessoas chegam e não compram"',             cat: 'FUNIL'    },
+        { t: '"Gasto com anúncios mas não sei se está funcionando de verdade"', cat: 'METRICAS' },
+        { t: '"Consigo atenção mas os leads não são meu público ideal"',        cat: 'PUBLICO'  },
+        { t: '"Meus anúncios mal recebem cliques — ninguém para para ver"',    cat: 'CRIATIVO' },
       ],
     },
   ];
 
+  /* ── Diagnoses ─────────────────────────────────────── */
   var PRIORITY = ['METRICAS', 'FUNIL', 'PUBLICO', 'CRIATIVO', 'BASE'];
 
-  var DIAGNOSES = {
+  var DX = {
     FUNIL: {
       icon: '🪣',
       title: 'Seu tráfego está saindo pelo ralo',
-      body: 'Você consegue fazer pessoas clicarem — o problema está em onde elas chegam depois. A home do site tem dezenas de distrações, o WhatsApp sem script recebe o lead frio, e uma página desalinhada com o anúncio quebra a confiança antes de qualquer venda acontecer.',
-      consequences: [
+      body: 'Você consegue gerar cliques — o problema está em onde as pessoas chegam depois. A home do site tem dezenas de distrações. O WhatsApp sem script recebe o lead frio. Uma página desalinhada com o anúncio quebra a confiança antes da venda acontecer. O criativo faz a pessoa clicar, o destino faz a pessoa comprar.',
+      cons: [
         'Você paga por cada clique, mas converte uma fração do potencial real',
-        'Leads que chegam confusos raramente voltam a ser impactados',
-        'Quanto mais você escala o orçamento, mais escala o desperdício',
+        'Leads chegam confusos e raramente voltam a ser impactados',
+        'Qualquer aumento de orçamento amplifica o desperdício, não as vendas',
       ],
     },
     PUBLICO: {
       icon: '🎯',
       title: 'Você está pagando para falar com quem não vai comprar',
-      body: 'Algoritmos não adivinham quem é seu comprador ideal — eles otimizam para quem clica. Com segmentação ampla ou automática, você atrai curiosidade e pouca intenção de compra real. O resultado é volume de interação e silêncio nas vendas.',
-      consequences: [
-        'CPL alto com leads de baixíssima qualidade — custo sem retorno',
+      body: 'Algoritmos não adivinham seu comprador ideal — eles otimizam para quem clica. Segmentação ampla ou automática atrai curiosidade, não intenção de compra. O resultado: volume de interação, silêncio nas vendas. E quanto mais você gasta, mais você paga por pessoas que nunca vão converter.',
+      cons: [
+        'CPL alto com leads de qualidade baixíssima — custo sem retorno real',
         'Escalar orçamento vai escalar o problema, não as vendas',
-        'Você nunca descobre se é o produto, o criativo ou o público o problema',
+        'Você nunca descobre se é o produto, o criativo ou o público o gargalo',
       ],
     },
     CRIATIVO: {
       icon: '📺',
-      title: 'Seus anúncios não param o scroll — e o algoritmo te pune por isso',
-      body: 'No feed de hoje você tem entre 1 e 2 segundos. Criativos que mostram o produto ou "ficaram bonitos" não criam o gatilho de identificação que faz alguém parar e pensar "isso é sobre mim". Baixo CTR significa que o algoritmo distribui menos e você paga mais por resultado.',
-      consequences: [
+      title: 'Seus anúncios não param o scroll — e o algoritmo te pune',
+      body: 'No feed de hoje você tem entre 1 e 2 segundos. Criativos que mostram o produto, falam do serviço ou "ficaram bonitos" não criam o gatilho de identificação que faz alguém parar e pensar: <em>isso é sobre mim.</em> CTR baixo é sinal de que o algoritmo distribui menos e você paga mais por cada resultado.',
+      cons: [
         'CPM alto e CTR baixo — o algoritmo entende que seu anúncio não é relevante',
         'Você troca criativos sem direção, sem saber o que realmente funciona',
         'Concorrentes com copy melhor chegam mais barato ao mesmo público',
@@ -372,217 +661,300 @@
     METRICAS: {
       icon: '🌫️',
       title: 'Você está tomando decisões de dinheiro no escuro',
-      body: 'Alcance e curtidas medem popularidade, não resultado. Sem saber seu custo por lead, custo por venda e quais criativos realmente convertem, você não tem como escalar o que funciona nem parar o que drena. Cada mês que passa é um ciclo de tentativa e erro que consome budget sem aprendizado.',
-      consequences: [
+      body: 'Alcance e curtidas medem popularidade — não resultado. Sem saber seu custo por lead, custo por venda e quais criativos convertem, você não tem como escalar o que funciona nem cortar o que drena. Cada mês que passa é mais um ciclo de tentativa e erro que consome budget sem produzir aprendizado real.',
+      cons: [
         'Impossível saber se o problema é o anúncio, o público ou a página',
-        'Você continua investindo em campanhas que parecem boas mas não convertem',
-        'Qualquer aumento de orçamento é um risco — pode escalar o erro junto',
+        'Você reinveste em campanhas que parecem boas mas não convertem',
+        'Qualquer escala de orçamento carrega o risco de ampliar o erro',
       ],
     },
     BASE: {
       icon: '🏗️',
-      title: 'Você quer crescer, mas a fundação ainda não está no lugar',
-      body: 'Investir em tráfego sem pixel instalado, oferta clara e uma página que converte é como colocar combustível em um carro sem motor. O dinheiro vai embora, o algoritmo não tem dados para otimizar, e você não tem base para saber se algo funcionou ou não.',
-      consequences: [
-        'O algoritmo não tem dados para otimizar — você paga o CPM mais caro',
+      title: 'Você quer crescer, mas a fundação não está no lugar',
+      body: 'Investir em tráfego sem pixel configurado, oferta clara e uma página que converte é como colocar combustível em um carro sem motor. O dinheiro vai embora, o algoritmo não tem dados para otimizar, e você não tem base para saber se alguma coisa funcionou. Existe uma ordem de construção que precisa ser respeitada antes de pagar por cliques.',
+      cons: [
+        'O algoritmo não tem dados de conversão — você paga o CPM mais caro possível',
         'Sem uma página que converte, nenhum orçamento gera retorno consistente',
-        'Você vai queimar o budget de testes antes de aprender o básico',
+        'Você vai queimar o budget de testes antes de aprender o que funciona',
       ],
     },
   };
 
-  var state = { answers: {}, stepIndex: 0, diagnosis: null, name: '', submitted: false };
-  var navStack = [];
-  var TOTAL_STEPS = QUESTIONS.length + 1; // 6 perguntas + 1 captura
+  /* ── State ─────────────────────────────────────────── */
+  var state = { step: S.INTRO, answers: {}, dx: null, name: '', submitted: false };
+  var stack = [];
+  var dir   = 'fwd';
 
-  var root = document.getElementById('step-root');
-  var backBtn = document.getElementById('back-btn');
-  var progressFill = document.getElementById('progress-fill');
+  /* ── DOM refs ──────────────────────────────────────── */
+  var root      = document.getElementById('root');
+  var chrome    = document.getElementById('chrome');
+  var backBtn   = document.getElementById('back-btn');
+  var progFill  = document.getElementById('prog-fill');
+  var progLabel = document.getElementById('prog-label');
 
+  /* ── Helpers ───────────────────────────────────────── */
   function genId() {
-    return (crypto.randomUUID && crypto.randomUUID()) || (Date.now() + '-' + Math.random().toString(36).slice(2));
+    return (crypto.randomUUID && crypto.randomUUID()) ||
+           (Date.now() + '-' + Math.random().toString(36).slice(2));
   }
 
-  function escapeHtml(str) {
-    return String(str || '').replace(/[&<>"']/g, function(c) {
-      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+  function esc(s) {
+    return String(s || '').replace(/[&<>"']/g, function(c) {
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
     });
   }
 
-  function computeDiagnosis() {
-    var score = { METRICAS: 0, FUNIL: 0, PUBLICO: 0, CRIATIVO: 0, BASE: 0 };
-    QUESTIONS.forEach(function(q) {
+  function setHtml(html) {
+    root.innerHTML = html;
+    var el = root.firstElementChild;
+    if (el) el.classList.add(dir === 'fwd' ? 'anim-fwd' : 'anim-back');
+  }
+
+  function dx() {
+    var score = {METRICAS:0, FUNIL:0, PUBLICO:0, CRIATIVO:0, BASE:0};
+    QS.forEach(function(q) {
       var a = state.answers[q.id];
       if (a && a.cat) score[a.cat]++;
     });
-    var max = -1;
-    var result = 'METRICAS';
-    PRIORITY.forEach(function(key) {
-      if (score[key] > max) { max = score[key]; result = key; }
-    });
-    return result;
+    var max = -1, res = 'METRICAS';
+    PRIORITY.forEach(function(k) { if (score[k] > max) { max = score[k]; res = k; } });
+    return res;
   }
 
+  /* ── Chrome update ─────────────────────────────────── */
   function updateChrome() {
-    var onResult = state.stepIndex > QUESTIONS.length;
-    backBtn.classList.toggle('visible', navStack.length > 0 && !onResult);
-    var pct = Math.min(state.stepIndex / TOTAL_STEPS * 100, 100);
-    progressFill.style.width = pct + '%';
+    var onIntro  = state.step === S.INTRO;
+    var onResult = state.step === S.RESULT || state.step === S.PROCESSING;
+    var onCapt   = state.step === QS.length;
+    var qIdx     = state.step; // 0-5 for questions
+
+    chrome.classList.toggle('show', !onIntro);
+    backBtn.classList.toggle('show', stack.length > 0 && !onResult && !onCapt);
+
+    if (onIntro) return;
+
+    if (onResult) {
+      progFill.style.width = '100%';
+      progLabel.textContent = 'Diagnóstico concluído';
+      progLabel.classList.add('done');
+      return;
+    }
+
+    progLabel.classList.remove('done');
+
+    if (state.step === S.PROCESSING) {
+      progFill.style.width = '100%';
+      progLabel.textContent = 'Analisando...';
+      return;
+    }
+
+    if (onCapt) {
+      progFill.style.width = '92%';
+      progLabel.textContent = 'Quase lá...';
+      return;
+    }
+
+    var pct = (qIdx / QS.length) * 100;
+    progFill.style.width = pct + '%';
+    progLabel.textContent = 'Pergunta ' + (qIdx + 1) + ' de ' + QS.length;
   }
 
+  /* ── Render dispatcher ─────────────────────────────── */
   function render() {
     updateChrome();
-    if (state.stepIndex < QUESTIONS.length) {
-      renderQuestion(QUESTIONS[state.stepIndex]);
-    } else if (state.stepIndex === QUESTIONS.length) {
-      renderCapture();
-    } else {
-      renderResult();
-    }
+    if      (state.step === S.INTRO)      renderIntro();
+    else if (state.step < QS.length)      renderQ(QS[state.step]);
+    else if (state.step === QS.length)    renderCapture();
+    else if (state.step === S.PROCESSING) renderProcessing();
+    else                                   renderResult();
   }
 
-  function renderQuestion(q) {
-    var html = '<div class="step">';
-    html += '<div class="q-eyebrow">' + q.eyebrow + '</div>';
-    html += '<h1 class="q-title">' + q.title + '</h1>';
-    html += '<div class="options-list">';
-    q.options.forEach(function(o) {
-      html += '<button class="option-btn">' + escapeHtml(o.label) + '</button>';
+  /* ── Intro ─────────────────────────────────────────── */
+  function renderIntro() {
+    setHtml(
+      '<div>' +
+      '<div class="intro-pill"><span class="dot"></span> Diagnóstico gratuito</div>' +
+      '<h1 class="intro-hl">O que está <span class="grad">freando suas vendas</span> online?</h1>' +
+      '<p class="intro-body">Em 6 perguntas rápidas você descobre o principal erro que está custando dinheiro ao seu negócio — e o que fazer para corrigir a partir de hoje.</p>' +
+      '<div class="checks">' +
+        '<div class="check"><div class="check-icon">✓</div><span>Identifica o gargalo principal das suas vendas</span></div>' +
+        '<div class="check"><div class="check-icon">✓</div><span>Explica por que esse erro está custando dinheiro</span></div>' +
+        '<div class="check"><div class="check-icon">✓</div><span>Mostra o próximo passo concreto para corrigir</span></div>' +
+      '</div>' +
+      '<div class="opts">' +
+        '<button class="btn btn-primary" id="start-btn">Começar diagnóstico →</button>' +
+      '</div>' +
+      '<div class="intro-footer">' +
+        '<span>Gratuito</span><span class="sep">·</span><span>60 segundos</span><span class="sep">·</span><span>Resultado personalizado</span>' +
+      '</div>' +
+      '</div>'
+    );
+    document.getElementById('start-btn').addEventListener('click', function () {
+      try { trackVC(); } catch (_) {}
+      fwd();
     });
-    html += '</div></div>';
-    root.innerHTML = html;
-    root.querySelectorAll('.option-btn').forEach(function(btn, idx) {
-      btn.addEventListener('click', function() {
-        navStack.push({ stepIndex: state.stepIndex, answers: JSON.parse(JSON.stringify(state.answers)) });
-        state.answers[q.id] = { label: q.options[idx].label, cat: q.options[idx].cat, idx: idx };
-        state.stepIndex++;
-        render();
+  }
+
+  /* ── Question ──────────────────────────────────────── */
+  function renderQ(q) {
+    var opts = q.options.map(function (o, i) {
+      return (
+        '<button class="opt">' +
+        '<span class="opt-letter">' + LETTERS[i] + '</span>' +
+        '<span class="opt-text">' + esc(o.t) + '</span>' +
+        '</button>'
+      );
+    }).join('');
+
+    setHtml(
+      '<div>' +
+      '<div class="eyebrow"><span class="dot"></span>' + esc(q.eyebrow) + '</div>' +
+      '<h2 class="headline">' + esc(q.title) + '</h2>' +
+      '<div class="opts">' + opts + '</div>' +
+      '</div>'
+    );
+
+    root.querySelectorAll('.opt').forEach(function (btn, i) {
+      btn.addEventListener('click', function () {
+        stack.push({ step: state.step, answers: JSON.parse(JSON.stringify(state.answers)) });
+        state.answers[q.id] = { t: q.options[i].t, cat: q.options[i].cat, idx: i };
+        fwd();
       });
     });
   }
 
+  /* ── Capture ───────────────────────────────────────── */
   function renderCapture() {
-    state.diagnosis = computeDiagnosis();
-    var html = '<div class="step">';
-    html += '<div class="q-eyebrow">Último passo</div>';
-    html += '<h1 class="q-title">Seu diagnóstico está pronto</h1>';
-    html += '<p class="q-subtitle">Deixe seu nome e WhatsApp para ver o resultado personalizado.</p>';
-    html += '<form class="lead-form" id="lead-form">';
-    html += '<input type="text" id="lead-name" placeholder="Seu nome" autocomplete="name" required />';
-    html += '<input type="tel" id="lead-phone" placeholder="WhatsApp com DDD" autocomplete="tel" required />';
-    html += '<button type="submit" class="link-btn featured">Ver meu diagnóstico →</button>';
-    html += '</form></div>';
-    root.innerHTML = html;
-    document.getElementById('lead-form').addEventListener('submit', handleCapture);
+    state.dx = dx();
+    setHtml(
+      '<div>' +
+      '<div class="eyebrow"><span class="dot"></span>Último passo</div>' +
+      '<h2 class="headline">Seu diagnóstico está pronto</h2>' +
+      '<p class="sub">Deixe seu contato para revelar o resultado — e receber o caminho certo para o seu caso específico.</p>' +
+      '<form class="form" id="form">' +
+        '<div class="field"><span class="field-icon">👤</span><input id="fname" type="text"  placeholder="Seu nome"         autocomplete="name" required /></div>' +
+        '<div class="field"><span class="field-icon">📱</span><input id="fphone" type="tel" placeholder="WhatsApp com DDD"  autocomplete="tel"  required /></div>' +
+        '<button type="submit" class="btn btn-primary">Revelar meu diagnóstico →</button>' +
+      '</form>' +
+      '</div>'
+    );
+    document.getElementById('form').addEventListener('submit', onSubmit);
   }
 
-  function handleCapture(e) {
+  function onSubmit(e) {
     e.preventDefault();
-    var name = document.getElementById('lead-name').value.trim();
-    var phone = document.getElementById('lead-phone').value.trim();
+    var name  = document.getElementById('fname').value.trim();
+    var phone = document.getElementById('fphone').value.trim();
     if (!name || !phone) return;
     state.name = name;
-
     if (!state.submitted) {
       state.submitted = true;
-      submitToBackend(name, phone);
+      persist(name, phone);
       trackLead(name, phone);
     }
-
-    state.stepIndex++;
+    dir = 'fwd';
+    state.step = S.PROCESSING;
     render();
   }
 
-  function submitToBackend(name, phone) {
-    var answersForSubmit = {};
-    QUESTIONS.forEach(function(q) {
-      if (state.answers[q.id]) answersForSubmit[q.id] = state.answers[q.id].label;
-    });
+  /* ── Processing ────────────────────────────────────── */
+  function renderProcessing() {
+    setHtml(
+      '<div>' +
+      '<div class="proc">' +
+        '<div class="proc-ring"></div>' +
+        '<div class="proc-text">Analisando suas respostas...</div>' +
+        '<div class="proc-sub">Calculando seu diagnóstico</div>' +
+      '</div>' +
+      '</div>'
+    );
+    setTimeout(function () {
+      dir = 'fwd';
+      state.step = S.RESULT;
+      render();
+    }, 1700);
+  }
+
+  /* ── Result ────────────────────────────────────────── */
+  function renderResult() {
+    var d = DX[state.dx];
+    var first = esc(state.name.split(' ')[0]);
+    var q1 = state.answers.q1;
+    var pro = q1 && (q1.idx === 0 || q1.idx === 1);
+    var waMsg = encodeURIComponent('Olá Djhonata! Fiz o diagnóstico de vendas e meu resultado foi: ' + d.title + '. Quero saber mais.');
+    var waUrl = 'https://wa.me/' + WA + '?text=' + waMsg;
+
+    var cta = pro
+      ? '<p class="cta-note">Para corrigir esse erro no seu caso específico, você precisa de uma gestão profissional — alguém que monte a estrutura certa, acompanhe os números e escale o que funcionar para o seu negócio.</p>' +
+        '<a href="' + waUrl + '" target="_blank" rel="noopener" class="btn btn-primary">Quero uma gestão profissional →</a>' +
+        '<a href="/vendas" class="btn">Prefiro aprender a corrigir sozinho</a>'
+      : '<p class="cta-note">A boa notícia é que esse erro tem solução direta. No curso você aprende a montar a estrutura certa do zero, com método claro e exemplos do mercado real.</p>' +
+        '<a href="/vendas" class="btn btn-primary">Quero aprender a corrigir isso →</a>' +
+        '<a href="' + waUrl + '" target="_blank" rel="noopener" class="btn">Prefiro contratar um especialista</a>';
+
+    var cons = d.cons.map(function (c) {
+      return '<div class="con"><span class="con-icon">⚠</span><span>' + esc(c) + '</span></div>';
+    }).join('');
+
+    setHtml(
+      '<div>' +
+      '<div class="res-pill"><span class="dot"></span>Seu diagnóstico, ' + first + '</div>' +
+      '<div class="res-icon-wrap">' + d.icon + '</div>' +
+      '<h2 class="res-hl grad">' + esc(d.title) + '</h2>' +
+      '<p class="res-body">' + d.body + '</p>' +
+      '<div class="cons-list">' + cons + '</div>' +
+      '<div class="divider"><span class="div-label">O que fazer agora</span></div>' +
+      '<div class="opts">' + cta + '</div>' +
+      '</div>'
+    );
+  }
+
+  /* ── Navigation ────────────────────────────────────── */
+  function fwd() { dir = 'fwd'; state.step++; render(); }
+
+  backBtn.addEventListener('click', function () {
+    if (!stack.length || state.step >= S.PROCESSING) return;
+    var prev = stack.pop();
+    dir = 'back';
+    state.step = prev.step;
+    state.answers = prev.answers;
+    render();
+  });
+
+  /* ── Backend ───────────────────────────────────────── */
+  function persist(name, phone) {
+    var ans = {};
+    QS.forEach(function (q) { if (state.answers[q.id]) ans[q.id] = state.answers[q.id].t; });
     fetch('/quiz-submit', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       keepalive: true,
-      body: JSON.stringify({
-        path: 'diagnostico',
-        diagnosis: state.diagnosis,
-        name: name,
-        phone: phone,
-        answers: answersForSubmit,
-      }),
-    }).catch(function() {});
+      body: JSON.stringify({ path: 'diagnostico', diagnosis: state.dx, name: name, phone: phone, answers: ans }),
+    }).catch(function () {});
+  }
+
+  /* ── Pixel ─────────────────────────────────────────── */
+  function trackVC() {
+    var id = genId();
+    try { fbq('track', 'ViewContent', { content_name: 'diagnostico' }, { eventID: id }); } catch (_) {}
+    fetch('/tracker', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ event_name: 'ViewContent', event_id: id, event_time: Math.floor(Date.now() / 1000), event_source_url: window.location.href, user_data: {} }),
+    }).catch(function () {});
   }
 
   function trackLead(name, phone) {
     var id = genId();
     try { fbq('track', 'Lead', {}, { eventID: id }); } catch (_) {}
-    try {
-      fetch('/tracker', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        keepalive: true,
-        body: JSON.stringify({
-          event_name: 'Lead', event_id: id,
-          event_time: Math.floor(Date.now() / 1000),
-          event_source_url: window.location.href,
-          user_data: { fn: name, ph: phone },
-        }),
-      }).catch(function() {});
-    } catch (_) {}
+    fetch('/tracker', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, keepalive: true,
+      body: JSON.stringify({ event_name: 'Lead', event_id: id, event_time: Math.floor(Date.now() / 1000), event_source_url: window.location.href, user_data: { fn: name, ph: phone } }),
+    }).catch(function () {});
   }
 
-  function renderResult() {
-    var d = DIAGNOSES[state.diagnosis];
-    var firstName = escapeHtml(state.name.split(' ')[0]);
-
-    // Q1 index 0 = "Invisto todo mês" / index 1 = "Já investi, parei"
-    // → perfil de quem já gasta dinheiro → CTA gestão
-    var q1 = state.answers.q1;
-    var isAdvanced = q1 && (q1.idx === 0 || q1.idx === 1);
-
-    var waMsg = encodeURIComponent(
-      'Olá Djhonata! Fiz o quiz de diagnóstico e meu resultado foi: ' + d.title + '. Quero saber mais.'
-    );
-    var waLink = 'https://wa.me/' + WHATSAPP_NUMBER + '?text=' + waMsg;
-
-    var ctaHtml;
-    if (isAdvanced) {
-      ctaHtml =
-        '<p class="cta-note">Para corrigir esse erro no seu negócio específico, você precisa de uma gestão profissional — alguém que monte a estrutura certa, acompanhe os números e escale o que funcionar.</p>' +
-        '<a href="' + waLink + '" target="_blank" rel="noopener" class="link-btn featured">Quero uma gestão profissional</a>' +
-        '<a href="/vendas" class="link-btn">Prefiro aprender a corrigir sozinho</a>';
-    } else {
-      ctaHtml =
-        '<p class="cta-note">A boa notícia: esse erro tem solução direta. No curso você aprende a montar a estrutura certa do zero, com método e exemplos reais do mercado.</p>' +
-        '<a href="/vendas" class="link-btn featured">Quero aprender a corrigir isso</a>' +
-        '<a href="' + waLink + '" target="_blank" rel="noopener" class="link-btn">Prefiro contratar um especialista</a>';
-    }
-
-    var conseqHtml = d.consequences.map(function(c) {
-      return '<div class="consequence-item">' + escapeHtml(c) + '</div>';
-    }).join('');
-
-    root.innerHTML =
-      '<div class="step">' +
-      '<div class="q-eyebrow">Seu diagnóstico, ' + firstName + '</div>' +
-      '<div class="result-icon">' + d.icon + '</div>' +
-      '<h1 class="q-title">' + escapeHtml(d.title) + '</h1>' +
-      '<p class="result-body">' + escapeHtml(d.body) + '</p>' +
-      '<div class="consequence-list">' + conseqHtml + '</div>' +
-      '<div class="divider"></div>' +
-      '<div class="options-list">' + ctaHtml + '</div>' +
-      '</div>';
-  }
-
-  function goBack() {
-    if (navStack.length === 0 || state.stepIndex > QUESTIONS.length) return;
-    var prev = navStack.pop();
-    state.stepIndex = prev.stepIndex;
-    state.answers = prev.answers;
-    render();
-  }
-  backBtn.addEventListener('click', goBack);
-
+  /* ── Boot ──────────────────────────────────────────── */
   render();
+})();
 </script>
 
 </body>
