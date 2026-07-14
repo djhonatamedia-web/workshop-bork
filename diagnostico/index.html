@@ -631,51 +631,132 @@
     FUNIL: {
       icon: '🪣',
       title: 'Seu tráfego está saindo pelo ralo',
-      body: 'Você consegue gerar cliques — o problema está em onde as pessoas chegam depois. A home do site tem dezenas de distrações. O WhatsApp sem script recebe o lead frio. Uma página desalinhada com o anúncio quebra a confiança antes da venda acontecer. O criativo faz a pessoa clicar, o destino faz a pessoa comprar.',
+      body: function (ans) {
+        var q2 = ans.q2 ? ans.q2.idx : null;
+        var dest = q2 === 0
+          ? 'a <strong>página inicial do seu site</strong> — um lugar com menu, links, sobre nós, portfólio e zero urgência para a pessoa agir'
+          : q2 === 1
+          ? '<strong>WhatsApp ou DM</strong> — uma conversa fria, sem contexto, onde o lead não sabe o que esperar e a maioria some antes de responder'
+          : 'um destino que não foi preparado para o momento certo da jornada de compra';
+        return (
+          'Todo clique que você pagou foi uma pessoa que chegou em ' + dest + '. Em segundos, sem entender o que fazer, ela foi embora. <strong>Esse clique saiu do seu bolso e não voltou.</strong> ' +
+          'Agora multiplica por todos os cliques que você pagou nesse período. Esse é o dinheiro que evaporou — não por causa do anúncio, não por causa do produto, mas pelo que acontece depois do clique. ' +
+          'O criativo faz a pessoa parar. O destino faz ela comprar. Você tem um, mas não o outro. ' +
+          'E enquanto você continua mandando tráfego para o lugar errado, cada real investido confirma que não funciona — sem que você saiba exatamente por quê.'
+        );
+      },
       cons: [
-        'Você paga por cada clique, mas converte uma fração do potencial real',
-        'Leads chegam confusos e raramente voltam a ser impactados',
-        'Qualquer aumento de orçamento amplifica o desperdício, não as vendas',
+        'Cada real em tráfego pagou por uma visita que saiu sem converter — e você não vai recuperar esse dinheiro',
+        'Leads que chegam sem contexto e saem sem interagir não voltam: você comprou e descartou sem saber',
+        'Aumentar o orçamento agora vai ampliar o desperdício, não as vendas',
       ],
     },
+
     PUBLICO: {
       icon: '🎯',
       title: 'Você está pagando para falar com quem não vai comprar',
-      body: 'Algoritmos não adivinham seu comprador ideal — eles otimizam para quem clica. Segmentação ampla ou automática atrai curiosidade, não intenção de compra. O resultado: volume de interação, silêncio nas vendas. E quanto mais você gasta, mais você paga por pessoas que nunca vão converter.',
+      body: function (ans) {
+        var q3 = ans.q3 ? ans.q3.idx : null;
+        var segDesc = q3 === 0
+          ? 'colocando alguns interesses e deixando o algoritmo decidir'
+          : q3 === 1
+          ? 'usando as sugestões automáticas da plataforma'
+          : q3 === 3
+          ? 'sem saber exatamente quem está vendo seus anúncios'
+          : 'sem uma definição precisa de quem é seu comprador real';
+        return (
+          'Você está ' + segDesc + '. O que o algoritmo faz com isso? Encontra quem tem mais chance de <strong>clicar</strong> — não de <strong>comprar.</strong> São pessoas completamente diferentes. ' +
+          'O resultado é um custo por lead que parece razoável, mas gera contatos que somem, não respondem, ou respondem mas nunca fecham. ' +
+          'Enquanto isso, os seus compradores reais — que têm o problema, têm a verba e estão procurando solução agora — estão vendo o anúncio do seu concorrente. Não o seu. ' +
+          '<strong>O dinheiro que você investiu não comprou clientes. Comprou curiosos.</strong> ' +
+          'E o pior: quanto mais você escala esse orçamento sem corrigir o público, mais você financia interações sem intenção de compra. A escala amplifica o erro — não as vendas.'
+        );
+      },
       cons: [
-        'CPL alto com leads de qualidade baixíssima — custo sem retorno real',
-        'Escalar orçamento vai escalar o problema, não as vendas',
-        'Você nunca descobre se é o produto, o criativo ou o público o gargalo',
+        'Cada real investido num público errado é um real que nunca chegou ao seu comprador real',
+        'Enquanto você financia curiosos, seu concorrente aparece para quem realmente vai comprar',
+        'Escalar orçamento sem corrigir o público multiplica o problema — não resolve',
       ],
     },
+
     CRIATIVO: {
       icon: '📺',
-      title: 'Seus anúncios não param o scroll — e o algoritmo te pune',
-      body: 'No feed de hoje você tem entre 1 e 2 segundos. Criativos que mostram o produto, falam do serviço ou "ficaram bonitos" não criam o gatilho de identificação que faz alguém parar e pensar: <em>isso é sobre mim.</em> CTR baixo é sinal de que o algoritmo distribui menos e você paga mais por cada resultado.',
+      title: 'Seus anúncios não param o scroll — e o algoritmo te pune por isso',
+      body: function (ans) {
+        var q4 = ans.q4 ? ans.q4.idx : null;
+        var criativoDesc = q4 === 0
+          ? 'você mostrou o produto, falou sobre o que ele faz, destacou os diferenciais'
+          : q4 === 1
+          ? 'você priorizou um visual bonito, profissional, bem produzido'
+          : q4 === 3
+          ? 'você adaptou o que os concorrentes estão fazendo e aplicou no seu negócio'
+          : 'você criou um anúncio sem o gatilho certo de identificação';
+        return (
+          'Quando ' + criativoDesc + ', o resultado é sempre o mesmo: <strong>a pessoa passa reto.</strong> ' +
+          'No feed de hoje, o usuário médio é exposto a centenas de anúncios por dia e desenvolveu o reflexo de ignorar tudo que não gritar <em>"isso está falando sobre o que eu vivo"</em> nos primeiros dois segundos. ' +
+          'Anúncio que fala do produto, do serviço, do que a empresa oferece não ativa esse gatilho. Nunca ativou. ' +
+          'O resultado concreto: CTR baixo → algoritmo interpreta que seu anúncio não é relevante → distribui menos → você paga mais por resultado pior. ' +
+          '<strong>É um ciclo que se autoalimenta.</strong> E enquanto seu anúncio não para o scroll, seu concorrente que entendeu isso está capturando, a um custo menor, a atenção que seria sua — todos os dias.'
+        );
+      },
       cons: [
-        'CPM alto e CTR baixo — o algoritmo entende que seu anúncio não é relevante',
-        'Você troca criativos sem direção, sem saber o que realmente funciona',
-        'Concorrentes com copy melhor chegam mais barato ao mesmo público',
+        'CTR baixo → algoritmo pune → você paga mais para aparecer menos para as pessoas erradas',
+        'Cada criativo trocado sem direção começa do zero — sem acúmulo de aprendizado',
+        'Concorrentes com copy de dor estão convertendo seu público enquanto você testa no escuro',
       ],
     },
+
     METRICAS: {
       icon: '🌫️',
       title: 'Você está tomando decisões de dinheiro no escuro',
-      body: 'Alcance e curtidas medem popularidade — não resultado. Sem saber seu custo por lead, custo por venda e quais criativos convertem, você não tem como escalar o que funciona nem cortar o que drena. Cada mês que passa é mais um ciclo de tentativa e erro que consome budget sem produzir aprendizado real.',
+      body: function (ans) {
+        var q5 = ans.q5 ? ans.q5.idx : null;
+        var q1 = ans.q1 ? ans.q1.idx : null;
+        var metrica = q5 === 0
+          ? 'Você olha para curtidas, alcance e visualizações para saber se o mês foi bom. Essas métricas medem popularidade — não resultado. <strong>Curtidas não pagam conta. Alcance não é venda.</strong>'
+          : q5 === 1
+          ? 'Você espera ver se as vendas subiram no geral — mas sem isolar o que mudou, você nunca consegue identificar o que causou o resultado, bom ou ruim.'
+          : q5 === 3
+          ? 'Você não acompanha as métricas porque é complicado demais. O problema: o dinheiro continua saindo, e sem dados você não tem como saber se está indo para o lugar certo ou direto pelo ralo.'
+          : 'Você não tem visibilidade real sobre o que está funcionando e o que não está.';
+        var ciclo = q1 === 0
+          ? ' <strong>Todo mês você reinveste. Todo mês o ciclo se repete:</strong> gasta, não sabe o que funcionou, muda algo sem saber se estava certo, repete. Sem dados reais, cada real investido é um chute com dinheiro de verdade.'
+          : q1 === 1
+          ? ' Você investiu, não viu retorno claro, e parou. Faz sentido — porque sem dados, continuar seria jogar dinheiro fora às cegas. Mas o problema é que você também ficou sem o aprendizado que só os dados dariam.'
+          : '';
+        return (
+          metrica +
+          ' Você provavelmente já pausou campanhas que estavam começando a funcionar — porque sem dados pareciam que não iam. E manteve campanhas ativas que drenavam orçamento silenciosamente — porque o alcance parecia bom.' +
+          ciclo +
+          ' <strong>O próximo mês vai ser igual ao último — a não ser que isso mude.</strong>'
+        );
+      },
       cons: [
-        'Impossível saber se o problema é o anúncio, o público ou a página',
-        'Você reinveste em campanhas que parecem boas mas não convertem',
-        'Qualquer escala de orçamento carrega o risco de ampliar o erro',
+        'Sem custo por lead e custo por venda, é impossível saber o que funciona e o que drena',
+        'Você provavelmente já pausou o que estava funcionando e manteve o que estava queimando verba',
+        'Cada mês sem dados é um mês onde o mesmo erro se repete e você paga por ele de novo',
       ],
     },
+
     BASE: {
       icon: '🏗️',
       title: 'Você quer crescer, mas a fundação não está no lugar',
-      body: 'Investir em tráfego sem pixel configurado, oferta clara e uma página que converte é como colocar combustível em um carro sem motor. O dinheiro vai embora, o algoritmo não tem dados para otimizar, e você não tem base para saber se alguma coisa funcionou. Existe uma ordem de construção que precisa ser respeitada antes de pagar por cliques.',
+      body: function (ans) {
+        var q1 = ans.q1 ? ans.q1.idx : null;
+        var contexto = q1 === 1
+          ? 'Você já foi por esse caminho: investiu em anúncios, o dinheiro saiu, o resultado não veio, e você parou. Não foi fraqueza — foi o resultado certo para uma fundação errada. <strong>Sem pixel, sem funil, sem oferta clara, o algoritmo não tinha o que otimizar.</strong> Você pagou para confirmar que não funcionava.'
+          : 'Você ainda não colocou dinheiro em tráfego pago — e isso, agora, é uma vantagem real. <strong>Você ainda não pagou para confirmar que a base estava errada.</strong> Quem entra sem estrutura aprende o que não funciona a um custo muito alto.';
+        return (
+          contexto +
+          ' A ordem de construção é inegociável: pixel instalado → oferta clara → página que converte → depois tráfego. ' +
+          'Inverter isso não quebra só o retorno — quebra o aprendizado. Sem conversão, o algoritmo não tem dados. Sem dados, ele não encontra seu comprador. ' +
+          '<strong>Você termina pagando o CPM mais caro do mercado por resultados que não chegam</strong> — e sem entender por quê, o ciclo se repete mês a mês até o orçamento acabar.'
+        );
+      },
       cons: [
-        'O algoritmo não tem dados de conversão — você paga o CPM mais caro possível',
-        'Sem uma página que converte, nenhum orçamento gera retorno consistente',
-        'Você vai queimar o budget de testes antes de aprender o que funciona',
+        'Sem pixel configurado, o algoritmo otimiza no escuro — e cobra o preço mais alto por isso',
+        'Sem uma página que converte, nenhum orçamento gera retorno real — independente do quanto você invista',
+        'Entrar em tráfego sem fundação é pagar para aprender o que não funciona, um erro caro de cada vez',
       ],
     },
   };
@@ -885,11 +966,11 @@
     var waUrl = 'https://wa.me/' + WA + '?text=' + waMsg;
 
     var cta = pro
-      ? '<p class="cta-note">Para corrigir esse erro no seu caso específico, você precisa de uma gestão profissional — alguém que monte a estrutura certa, acompanhe os números e escale o que funcionar para o seu negócio.</p>' +
-        '<a href="' + waUrl + '" target="_blank" rel="noopener" class="btn btn-primary">Quero uma gestão profissional →</a>' +
+      ? '<p class="cta-note">A cada semana que passa com essa estrutura quebrada, você está pagando para confirmar que não funciona. O dinheiro sai, o ciclo se repete, e a diferença entre o mês que passou e o próximo mês é zero — a não ser que algo mude agora.</p>' +
+        '<a href="' + waUrl + '" target="_blank" rel="noopener" class="btn btn-primary">Quero resolver isso com um especialista →</a>' +
         '<a href="/vendas" class="btn">Prefiro aprender a corrigir sozinho</a>'
-      : '<p class="cta-note">A boa notícia é que esse erro tem solução direta. No curso você aprende a montar a estrutura certa do zero, com método claro e exemplos do mercado real.</p>' +
-        '<a href="/vendas" class="btn btn-primary">Quero aprender a corrigir isso →</a>' +
+      : '<p class="cta-note">Você tem uma janela que a maioria perde: aprender a estrutura certa antes de colocar dinheiro em tráfego. Quem aprende depois — depois de queimar verba, de parar campanhas no escuro, de meses sem retorno — paga um preço muito mais alto pelo mesmo aprendizado.</p>' +
+        '<a href="/vendas" class="btn btn-primary">Quero aprender antes de jogar dinheiro fora →</a>' +
         '<a href="' + waUrl + '" target="_blank" rel="noopener" class="btn">Prefiro contratar um especialista</a>';
 
     var cons = d.cons.map(function (c) {
@@ -901,7 +982,7 @@
       '<div class="res-pill"><span class="dot"></span>Seu diagnóstico, ' + first + '</div>' +
       '<div class="res-icon-wrap">' + d.icon + '</div>' +
       '<h2 class="res-hl grad">' + esc(d.title) + '</h2>' +
-      '<p class="res-body">' + d.body + '</p>' +
+      '<p class="res-body">' + d.body(state.answers) + '</p>' +
       '<div class="cons-list">' + cons + '</div>' +
       '<div class="divider"><span class="div-label">O que fazer agora</span></div>' +
       '<div class="opts">' + cta + '</div>' +
