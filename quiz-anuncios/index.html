@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Descubra seu perfil de tráfego pago</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #14111a;
+    --bg-2: #1d1826;
+    --card: #221c2e;
+    --line: #34293f;
+    --text: #f3efe9;
+    --text-dim: #b5abc2;
+    --accent: #ff3f6e;
+    --accent-dim: #5c1f31;
+    --gold: #ffb238;
+    --gold-dim: #4a3714;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(circle at 15% 0%, #2a1f38 0%, transparent 45%),
+      radial-gradient(circle at 85% 100%, #2a1a24 0%, transparent 45%),
+      var(--bg);
+    color:var(--text);
+    font-family:'Inter', sans-serif;
+    min-height:100vh;
+    display:flex;
+    align-items:flex-start;
+    justify-content:center;
+    padding:32px 16px 64px;
+  }
+  .display{ font-family:'Bebas Neue', sans-serif; letter-spacing:0.5px; }
+  .mono{ font-family:'JetBrains Mono', monospace; letter-spacing:0.5px; }
+
+  .wrap{ width:100%; max-width:480px; }
+
+  /* header / vinyl progress */
+  .top{ display:flex; align-items:center; gap:16px; margin-bottom:28px; }
+  .vinyl{
+    position:relative; width:56px; height:56px; border-radius:50%;
+    background: conic-gradient(var(--accent) calc(var(--pct,0)*1%), var(--line) 0);
+    display:flex; align-items:center; justify-content:center;
+    flex-shrink:0;
+    transition: background 0.5s ease;
+  }
+  .vinyl::before{
+    content:""; position:absolute; width:40px; height:40px; border-radius:50%;
+    background: var(--bg-2); border:1px solid var(--line);
+  }
+  .vinyl::after{
+    content:""; position:absolute; width:8px; height:8px; border-radius:50%; background: var(--gold);
+  }
+  .top-text .eyebrow{ font-size:12px; color:var(--text-dim); text-transform:uppercase; }
+  .top-text .track{ font-size:22px; line-height:1; }
+
+  /* cards / steps */
+  .stage{ position:relative; }
+  .step{
+    display:none;
+    background: var(--card);
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:28px 24px;
+    animation: fadeIn 0.35s ease;
+  }
+  .step.active{ display:block; }
+  @keyframes fadeIn{ from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:translateY(0);} }
+
+  .q-label{ font-size:13px; color:var(--gold); margin-bottom:8px; }
+  h2.q{
+    font-size:30px;
+    line-height:1.05;
+    margin:0 0 22px;
+    font-weight:400;
+  }
+
+  .options{ display:flex; flex-direction:column; gap:10px; }
+  .opt{
+    display:flex; align-items:center; gap:12px;
+    background: var(--bg-2);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:14px 16px;
+    cursor:pointer;
+    font-size:15px;
+    color:var(--text);
+    transition: border-color 0.15s ease, background 0.15s ease;
+  }
+  .opt:hover{ border-color:#5a4a6b; }
+  .opt .dot{
+    width:16px; height:16px; border-radius:50%;
+    border:1.5px solid var(--text-dim);
+    flex-shrink:0;
+    position:relative;
+  }
+  .opt.selected{ border-color:var(--accent); background:rgba(255,63,110,0.08); }
+  .opt.selected .dot{ border-color:var(--accent); }
+  .opt.selected .dot::after{
+    content:""; position:absolute; inset:3px; border-radius:50%; background:var(--accent);
+  }
+
+  .nav{ display:flex; justify-content:space-between; align-items:center; margin-top:24px; }
+  .btn{
+    border:none; border-radius:999px; cursor:pointer;
+    font-family:'Inter', sans-serif; font-weight:600; font-size:15px;
+    padding:13px 22px;
+    transition: opacity 0.15s ease, transform 0.1s ease;
+  }
+  .btn:active{ transform: scale(0.98); }
+  .btn-primary{ background:var(--accent); color:#fff; }
+  .btn-primary:disabled{ opacity:0.35; cursor:not-allowed; }
+  .btn-ghost{ background:transparent; color:var(--text-dim); padding:13px 8px; }
+
+  /* result screen */
+  .result{ display:none; text-align:left; }
+  .result.active{ display:block; animation: fadeIn 0.4s ease; }
+  .badge{
+    display:inline-block; font-size:12px; padding:6px 12px; border-radius:999px;
+    background:var(--gold-dim); color:var(--gold); margin-bottom:14px;
+  }
+  h1.result-title{ font-size:40px; line-height:1; margin:0 0 14px; }
+  .result-copy{ color:var(--text-dim); font-size:15px; line-height:1.6; margin-bottom:24px; }
+
+  .offer{
+    border:1px solid var(--gold-dim);
+    background: linear-gradient(180deg, rgba(255,178,56,0.08), transparent);
+    border-radius:16px;
+    padding:22px;
+    margin-bottom:20px;
+  }
+  .offer .label{ font-size:12px; color:var(--gold); margin-bottom:6px; }
+  .offer .name{ font-size:20px; margin-bottom:4px; }
+  .offer .desc{ font-size:14px; color:var(--text-dim); margin-bottom:16px; }
+  .price-row{ display:flex; align-items:baseline; gap:8px; margin-bottom:18px; }
+  .price{ font-size:34px; }
+  .price-old{ font-size:14px; color:var(--text-dim); text-decoration:line-through; }
+  .cta{
+    display:block; width:100%; text-align:center; text-decoration:none;
+    background:var(--accent); color:#fff; font-weight:700; font-size:16px;
+    padding:16px; border-radius:999px;
+  }
+  .cta:hover{ opacity:0.92; }
+  .fine{ font-size:12px; color:var(--text-dim); text-align:center; margin-top:10px; }
+
+  .foot{ text-align:center; margin-top:28px; color:var(--text-dim); font-size:13px; }
+  .foot a{ color:var(--text); text-decoration:none; }
+  .foot a:hover{ color:var(--gold); }
+
+  @media (prefers-reduced-motion: reduce){
+    .step, .result{ animation:none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <div class="top" id="progressHeader">
+    <div class="vinyl" id="vinyl" style="--pct:0"></div>
+    <div class="top-text">
+      <div class="eyebrow mono" id="stepLabel">Faixa 1 de 5</div>
+      <div class="track display">Seu diagnóstico de anúncios</div>
+    </div>
+  </div>
+
+  <div class="stage" id="stage">
+
+    <div class="step active" data-step="0">
+      <div class="q-label mono">FAIXA 01</div>
+      <h2 class="q">Qual dessas frases mais parece com você hoje?</h2>
+      <div class="options" data-q="0">
+        <div class="opt" data-value="0"><span class="dot"></span>Nunca rodei uma campanha na vida</div>
+        <div class="opt" data-value="1"><span class="dot"></span>Já rodei, mas fui no achismo</div>
+        <div class="opt" data-value="1"><span class="dot"></span>Rodo, mas sinto que tô queimando dinheiro</div>
+        <div class="opt" data-value="2"><span class="dot"></span>Rodo bem, quero profissionalizar de vez</div>
+      </div>
+      <div class="nav">
+        <span></span>
+        <button class="btn btn-primary" id="next0" disabled>Próxima faixa</button>
+      </div>
+    </div>
+
+    <div class="step" data-step="1">
+      <div class="q-label mono">FAIXA 02</div>
+      <h2 class="q">O que faria mais diferença no seu negócio agora?</h2>
+      <div class="options" data-q="1">
+        <div class="opt" data-value="0">Mensagens no WhatsApp todo dia</div>
+        <div class="opt" data-value="0">Leads qualificados pra eu vender depois</div>
+        <div class="opt" data-value="1">Vendas caindo direto sem eu fazer nada</div>
+        <div class="opt" data-value="0">Sinceramente, não sei nem por onde começar</div>
+      </div>
+      <div class="nav">
+        <button class="btn btn-ghost" data-back>Voltar</button>
+        <button class="btn btn-primary" id="next1" disabled>Próxima faixa</button>
+      </div>
+    </div>
+
+    <div class="step" data-step="2">
+      <div class="q-label mono">FAIXA 03</div>
+      <h2 class="q">Qual desses já aconteceu com você (ou é seu maior medo)?</h2>
+      <div class="options" data-q="2">
+        <div class="opt" data-value="0">Gastei e não sei nem pra quem apareceu</div>
+        <div class="opt" data-value="0">Fiz criativo e ninguém clicou</div>
+        <div class="opt" data-value="0">Cliquei em tudo no gerenciador sem entender nada</div>
+        <div class="opt" data-value="1">Acho que quem tem resultado só teve sorte</div>
+      </div>
+      <div class="nav">
+        <button class="btn btn-ghost" data-back>Voltar</button>
+        <button class="btn btn-primary" id="next2" disabled>Próxima faixa</button>
+      </div>
+    </div>
+
+    <div class="step" data-step="3">
+      <div class="q-label mono">FAIXA 04</div>
+      <h2 class="q">Quanto tempo você toparia investir pra aprender isso de verdade?</h2>
+      <div class="options" data-q="3">
+        <div class="opt" data-value="0">Nem 1 hora por semana, sou sincero</div>
+        <div class="opt" data-value="1">Consigo de 1 a 3 horas</div>
+        <div class="opt" data-value="2">Mais de 3 horas, tô determinado</div>
+        <div class="opt" data-value="2">O tempo que for, só quero resolver isso</div>
+      </div>
+      <div class="nav">
+        <button class="btn btn-ghost" data-back>Voltar</button>
+        <button class="btn btn-primary" id="next3" disabled>Próxima faixa</button>
+      </div>
+    </div>
+
+    <div class="step" data-step="4">
+      <div class="q-label mono">FAIXA 05</div>
+      <h2 class="q">O que mudaria primeiro se você soubesse anunciar sozinho?</h2>
+      <div class="options" data-q="4">
+        <div class="opt" data-value="0">Paro de depender de agência ou "amigo que entende"</div>
+        <div class="opt" data-value="1">Corto o dinheiro que eu perco com erro</div>
+        <div class="opt" data-value="2">Vendo sozinho sem precisar terceirizar</div>
+        <div class="opt" data-value="2">Ganho confiança pra escalar o que já roda</div>
+      </div>
+      <div class="nav">
+        <button class="btn btn-ghost" data-back>Voltar</button>
+        <button class="btn btn-primary" id="next4" disabled>Ver meu diagnóstico</button>
+      </div>
+    </div>
+
+    <div class="step" data-step="loading">
+      <div style="text-align:center; padding:20px 0;">
+        <div class="q-label mono" style="margin-bottom:14px;">CALCULANDO</div>
+        <h2 class="q" style="font-size:22px;" id="loadingText">Montando seu diagnóstico...</h2>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="result" id="result">
+    <span class="badge mono" id="resultBadge">SEU PERFIL</span>
+    <h1 class="result-title display" id="resultTitle">Perfil</h1>
+    <p class="result-copy" id="resultCopy">Copy</p>
+
+    <div class="offer">
+      <div class="label mono">OFERTA PRA VOCÊ</div>
+      <div class="name display" style="font-size:24px;">Anúncios do zero ao ar</div>
+      <div class="desc">5 aulas práticas: mensagens, leads, vendas e remarketing — pra você rodar sua primeira campanha sozinho essa semana.</div>
+      <div class="price-row">
+        <span class="price display">R$ 57</span>
+        <span class="price-old">R$ 197</span>
+      </div>
+      <a class="cta" href="#" id="ctaButton">Quero começar agora</a>
+      <div class="fine">Acesso imediato · pagamento único</div>
+    </div>
+  </div>
+
+  <div class="foot">
+    Um conteúdo de <a href="https://www.instagram.com/djhonatamkt" target="_blank" rel="noopener">@djhonatamkt</a>
+  </div>
+
+</div>
+
+<script>
+  const TOTAL_STEPS = 5;
+  let current = 0;
+  const answers = new Array(TOTAL_STEPS).fill(null);
+
+  const stage = document.getElementById('stage');
+  const vinyl = document.getElementById('vinyl');
+  const stepLabel = document.getElementById('stepLabel');
+  const progressHeader = document.getElementById('progressHeader');
+  const result = document.getElementById('result');
+
+  function updateVinyl(){
+    const pct = Math.round((current/TOTAL_STEPS)*100);
+    vinyl.style.setProperty('--pct', pct);
+    stepLabel.textContent = 'Faixa ' + Math.min(current+1, TOTAL_STEPS) + ' de ' + TOTAL_STEPS;
+  }
+
+  document.querySelectorAll('.options').forEach(group => {
+    const qIndex = parseInt(group.dataset.q, 10);
+    group.querySelectorAll('.opt').forEach(opt => {
+      opt.addEventListener('click', () => {
+        group.querySelectorAll('.opt').forEach(o => o.classList.remove('selected'));
+        opt.classList.add('selected');
+        answers[qIndex] = parseInt(opt.dataset.value, 10);
+        document.getElementById('next' + qIndex).disabled = false;
+      });
+    });
+  });
+
+  function goToStep(stepAttr){
+    document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+    const target = document.querySelector('.step[data-step="' + stepAttr + '"]');
+    if(target) target.classList.add('active');
+  }
+
+  for(let i=0; i<TOTAL_STEPS; i++){
+    document.getElementById('next'+i).addEventListener('click', () => {
+      if(i < TOTAL_STEPS - 1){
+        current = i+1;
+        goToStep(current);
+        updateVinyl();
+      } else {
+        current = TOTAL_STEPS;
+        updateVinyl();
+        goToStep('loading');
+        setTimeout(showResult, 1400);
+      }
+    });
+  }
+
+  document.querySelectorAll('[data-back]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      current = Math.max(0, current-1);
+      goToStep(current);
+      updateVinyl();
+    });
+  });
+
+  function showResult(){
+    const score = answers.reduce((a,b) => a + (b||0), 0);
+    let title, badge, copy;
+
+    if(score <= 3){
+      badge = 'PERFIL: INICIANTE PERDIDO';
+      title = 'Você tá no ponto zero — e tá tudo bem';
+      copy = 'Suas respostas mostram que você ainda não tem estrutura nenhuma rodando. É exatamente o ponto de partida das 5 aulas: você sai do zero e sobe sua primeira campanha sozinho, sem depender de ninguém.';
+    } else if(score <= 6){
+      badge = 'PERFIL: NO MEIO DO CAMINHO';
+      title = 'Você já roda, mas tá perdendo dinheiro no caminho';
+      copy = 'Você já testou campanha, mas sem um método por trás — e isso custa caro. As 5 aulas vão te dar a estrutura que falta: mensagens, leads, vendas e remarketing, na ordem certa.';
+    } else {
+      badge = 'PERFIL: PRONTO PRA ESCALAR';
+      title = 'Você só precisa profissionalizar o que já roda';
+      copy = 'Você já tem resultado, mas sabe que tá no limite do improviso. Essas 5 aulas fecham os buracos: remarketing, estrutura de campanha e a diferença entre sorte e método.';
+    }
+
+    document.getElementById('resultBadge').textContent = badge;
+    document.getElementById('resultTitle').textContent = title;
+    document.getElementById('resultCopy').textContent = copy;
+
+    progressHeader.style.display = 'none';
+    stage.style.display = 'none';
+    result.classList.add('active');
+  }
+
+  // TODO: troque o href abaixo pelo link real do seu checkout (Hotmart, Kiwify, Kirvano, etc.)
+  document.getElementById('ctaButton').setAttribute('href', 'https://pay.kiwify.com.br/ZdKcy4N');
+</script>
+
+</body>
+</html>
